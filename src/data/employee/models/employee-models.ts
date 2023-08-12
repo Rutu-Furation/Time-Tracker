@@ -1,5 +1,6 @@
 import mongoose from "mongoose";
 
+
 const addressSchema = new mongoose.Schema({
   streetName: {
     type: String,
@@ -97,5 +98,8 @@ const employeeSchema = new mongoose.Schema({
         default: "Live",
       },
       
-});
+    }
+);
+
+
 export const Employee = mongoose.model("Employee", employeeSchema);
