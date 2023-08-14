@@ -2,11 +2,11 @@
 import { AttendanceEntity,AttendanceModel } from "../entities/attendence";
 import { AttendanceRepository } from "../repositories/attendence-repository";
 
-export interface CreateAdminUsecase {
+export interface CreateAttendanceUsecase {
   execute: (adminData: AttendanceModel) => Promise<AttendanceEntity>;
 }
 
-export class CreateAdmin implements CreateAdminUsecase {
+export class CreateAttendance implements CreateAttendanceUsecase {
   private readonly AttendanceRepository: AttendanceRepository;
 
   constructor(AttendanceRepository: AttendanceRepository) {

@@ -16,29 +16,28 @@ export class UpdateAdmin implements UpdateAdminUsecase {
     this.AttendanceRepository = AttendanceRepository;
   }
 
-  // async execute(adminId: string, adminData: AttendanceModel): Promise<AttendanceEntity> {
-  //   return await this.AttendanceRepository.updateAdmin(adminId, adminData);
-  // }
-  // UpdateAdminUsecase
   async execute(
     adminId: string,
     adminData: Partial<AttendanceModel>
   ): Promise<AttendanceEntity> {
+
+
+
     const existingAdmin: AttendanceEntity | null =
       await this.AttendanceRepository.getAttendanceById(adminId);
 
     // Perform the partial update by merging adminData with existingAdmin
-    const updatedAdminData: AttendanceModel = {
+    const updatedAdminData:AttendanceEntity | any = {
       ...existingAdmin,
       ...adminData,
     };
 
     // Save the updatedAdminData to the repository
-    await this.AttendanceRepository.updateAdmin(adminId, updatedAdminData);
+    await this.AttendanceRepository.updateAttendance(adminId, updatedAdminData);
 
     // Fetch the updated admin entity from the repository
     const updatedAttendanceEntity: AttendanceEntity | null =
-      await this.AttendanceRepository.getAdminById(adminId);
+      await this.AttendanceRepository.getAttendanceById(adminId);
 
     if (!updatedAttendanceEntity) {
       throw new Error("Admin not found after update.");

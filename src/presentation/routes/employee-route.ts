@@ -10,21 +10,7 @@ import { GetEmployeeById } from "@domain/employee/usecases/get-employee-by-id";
 import { GetAllEmployees } from "@domain/employee/usecases/get-all-employee";
 import { UpdateEmployee } from "@domain/employee/usecases/update-Employee";
 import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
-// const dbURL =
-//   "mongodb+srv://mongodb+srv://satansharma:satansharma@cluster0.ncc9mtu.mongodb.net/?retryWrites=true&w=majority"; // Replace with your actual MongoDB connection URL
 
-// // Set up the required options for the connection
-// const dbOptions = {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   dbName: "myDatabase", // Replace with the name of your database
-//   // Other options like user and password can also be added if necessary
-// };
-
-// // Create the mongoose connection
-// mongoose.connect(dbURL, dbOptions).then(() => {
-//   console.log("Connected to MongoDB successfully!");
-// });
 
 // Create an instance of the EmployeeDataSourceImpl and pass the mongoose connection
 const employeeDataSource = new EmployeeDataSourceImpl(mongoose.connection);
