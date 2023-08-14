@@ -78,4 +78,4 @@
 //   }
 // };
 
-// export default adminValidator;
+// export default adminValidator

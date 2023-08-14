@@ -5,33 +5,6 @@ const validateEmail = function (email: string) {
   return re.test(email);
 };
 
-const addressSchema = new mongoose.Schema({
-  streetName: {
-    type: String,
-    required: true,
-  },
-  landMark: {
-    type: String,
-    required: true,
-  },
-  city: {
-    type: String,
-    required: true,
-  },
-  pinCode: {
-    type: Number,
-    required: true,
-  },
-  state: {
-    type: String,
-    required: true,
-  },
-  country: {
-    type: String,
-    required: true,
-  },
-});
-
 const adminSchema = new mongoose.Schema({
   fullName: {
     type: String,
@@ -52,7 +25,32 @@ const adminSchema = new mongoose.Schema({
     required: true,
     maxLength: [13, "Phone number should be under 13 Number"],
   },
-  address: addressSchema,
+  address: {
+    streetName: {
+      type: String,
+      required: true,
+    },
+    landMark: {
+      type: String,
+      required: true,
+    },
+    city: {
+      type: String,
+      required: true,
+    },
+    pinCode: {
+      type: String,
+      required: true,
+    },
+    state: {
+      type: String,
+      required: true,
+    },
+    country: {
+      type: String,
+      required: true,
+    },
+  },
   role: {
     type: String,
     required: true,
@@ -62,7 +60,7 @@ const adminSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  profilePicture: {
+  profile_picture: {
     type: String,
     required: false,
   },

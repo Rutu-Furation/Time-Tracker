@@ -25,4 +25,16 @@ export class AdminRepositoryImpl implements AdminRepository {
       return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
     }
   }
+
+  async getAdminById(id: string): Promise<Either<ErrorClass, AdminEntity>> {
+    try {
+      let response = await this.dataSource.getById(id);
+      return Right<ErrorClass, AdminEntity>(response);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return Left<ErrorClass, AdminEntity>(ApiError.notFound());
+      }
+      return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
+    }
+  }
 }

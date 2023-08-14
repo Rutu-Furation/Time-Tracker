@@ -9,5 +9,5 @@ export interface AdminRepository {
   //   data: AdminModel
   // ): Promise<Either<ErrorClass, AdminEntity>>;
   // getAdmins(): Promise<Either<ErrorClass, AdminEntity[]>>;
-  // getAdminById(id: string): Promise<Either<ErrorClass, AdminEntity>>;
+  getAdminById(id: string): Promise<Either<ErrorClass, AdminEntity>>;
 }

@@ -6,7 +6,7 @@ import { AdminDataSourceImpl } from "@data/admin/datasources/admin-data-source";
 import { AdminRepositoryImpl } from "@data/admin/repositories/admin-repository-impl";
 import { CreateAdmin } from "@domain/admin/usecases/create-admin";
 // import { DeleteAdmin } from "@domain/admin/usecases/delete-admin";
-// import { GetAdminById } from "@domain/admin/usecases/get-admin-by-id";
+import { GetAdminById } from "@domain/admin/usecases/get-admin-by-id";
 // import { GetAllAdmins } from "@domain/admin/usecases/get-all-admins";
 // import { UpdateAdmin } from "@domain/admin/usecases/update-admin";
 // import { validateAdminInputMiddleware } from "@presentation/middlewares/admin/validation-admin";
@@ -23,15 +23,15 @@ const adminRepository = new AdminRepositoryImpl(adminDataSource);
 // Create instances of the required use cases and pass the AdminRepositoryImpl
 const createAdminUsecase = new CreateAdmin(adminRepository);
 // const deleteAdminUsecase = new DeleteAdmin(adminRepository);
-// const getAdminByIdUsecase = new GetAdminById(adminRepository);
+const getAdminByIdUsecase = new GetAdminById(adminRepository);
 // const updateAdminUsecase = new UpdateAdmin(adminRepository);
 // const getAllAdminsUsecase = new GetAllAdmins(adminRepository);
 
 // Initialize AdminService and inject required dependencies
 const adminService = new AdminService(
-  createAdminUsecase
+  createAdminUsecase,
   // deleteAdminUsecase,
-  // getAdminByIdUsecase,
+  getAdminByIdUsecase
   // updateAdminUsecase,
   // getAllAdminsUsecase
 );
@@ -46,12 +46,10 @@ adminRouter.post(
 );
 
 // Route handling for getting an admin by ID
-// adminRouter.get(
-//   "/getById/:adminId",
-//   authorziedUser,
-//   adminView,
-//   adminService.getAdminById.bind(adminService)
-// );
+adminRouter.get(
+  "/getById/:adminId",
+  adminService.getAdminById.bind(adminService)
+);
 
 // // Route handling for updating an admin by ID
 // adminRouter.put(

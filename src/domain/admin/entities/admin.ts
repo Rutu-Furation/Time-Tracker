@@ -1,11 +1,11 @@
-// Now let's integrate the mapper classes with the Admin schema
+// // Now let's integrate the mapper classes with the Admin schema
 
 export class AdminModel {
   constructor(
     public fullName: string = "",
     public email: string = "",
     public phoneNo: number = 0,
-    public address: any = {}, // This will hold the nested address object
+    public address: any = {},
     public role: string = "",
     public active: boolean = false,
     public profilePicture: string = ""
@@ -18,7 +18,7 @@ export class AdminEntity {
     public fullName: string,
     public email: string,
     public phoneNo: number,
-    public address: any, // This will hold the nested address object
+    public address: any,
     public role: string,
     public active: boolean,
     public profilePicture: string
@@ -31,7 +31,7 @@ export class AdminMapper {
     includeId?: boolean,
     existingAdmin?: AdminEntity | null
   ): AdminEntity {
-    if (existingAdmin != null) {
+     if (existingAdmin != null) {
       return {
         ...existingAdmin,
         fullName:
@@ -73,7 +73,6 @@ export class AdminMapper {
       return adminEntity;
     }
   }
-
   static toModel(admin: AdminEntity): AdminModel {
     return {
       fullName: admin.fullName,
