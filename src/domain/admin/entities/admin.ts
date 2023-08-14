@@ -4,11 +4,20 @@ export class AdminModel {
   constructor(
     public fullName: string = "",
     public email: string = "",
-    public phoneNo: number = 0,
+    public password: string = "",
+     public phoneNo: number = 0,
     public address: any = {},
     public role: string = "",
     public active: boolean = false,
     public profilePicture: string = ""
+  ) {}
+}
+export class LoginModel {
+  constructor(
+    
+    public email: string = "",
+    public password: string = "",
+  
   ) {}
 }
 
@@ -17,11 +26,19 @@ export class AdminEntity {
     public id: string | undefined = undefined,
     public fullName: string,
     public email: string,
+    public password: string,
     public phoneNo: number,
     public address: any,
     public role: string,
     public active: boolean,
     public profilePicture: string
+  ) {}
+}
+
+export class LoginEntity {
+  constructor(
+    public email: string,
+    public password: string,
   ) {}
 }
 
@@ -40,6 +57,8 @@ export class AdminMapper {
             : existingAdmin.fullName,
         email:
           adminData.email !== undefined ? adminData.email : existingAdmin.email,
+
+
         phoneNo:
           adminData.phoneNo !== undefined
             ? adminData.phoneNo
@@ -64,6 +83,7 @@ export class AdminMapper {
         id: includeId ? adminData._id?.toString() : undefined,
         fullName: adminData.fullName,
         email: adminData.email,
+        password: adminData.password,
         phoneNo: adminData.phoneNo,
         address: adminData.address,
         role: adminData.role,
@@ -77,6 +97,7 @@ export class AdminMapper {
     return {
       fullName: admin.fullName,
       email: admin.email,
+      password: admin.password,
       phoneNo: admin.phoneNo,
       address: admin.address,
       role: admin.role,

@@ -1,4 +1,4 @@
-import { AdminModel, AdminEntity } from "@domain/admin/entities/admin";
+import { AdminModel, AdminEntity, LoginEntity, LoginModel } from "@domain/admin/entities/admin";
 import { AdminRepository } from "@domain/admin/repositories/admin-repository";
 import { AdminDataSource } from "@data/admin/datasources/admin-data-source";
 import ApiError, { ErrorClass } from "@presentation/error-handling/api-error";
@@ -15,9 +15,9 @@ export class AdminRepositoryImpl implements AdminRepository {
     admin: AdminModel
   ): Promise<Either<ErrorClass, AdminEntity>> {
     try {
-      let i = await this.dataSource.create(admin);
+      let newadmin = await this.dataSource.create(admin);
 
-      return Right<ErrorClass, AdminEntity>(i);
+      return Right<ErrorClass, AdminEntity>(newadmin);
     } catch (error) {
       if (error instanceof ApiError && error.status === 409) {
         return Left<ErrorClass, AdminEntity>(ApiError.emailExist());
@@ -37,7 +37,6 @@ export class AdminRepositoryImpl implements AdminRepository {
       return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
     }
   }
-
   async getAdmins(): Promise<Either<ErrorClass, AdminEntity[]>> {
     try {
       const response = await this.dataSource.getAllAdmins();
@@ -70,4 +69,19 @@ export class AdminRepositoryImpl implements AdminRepository {
       return Left<ErrorClass, void>(ApiError.badRequest());
     }
   }
+
+  async login(email:string, password:string): Promise<any> {
+    try {
+      const res = await this.dataSource.login(email, password);
+     
+      
+      return Right<ErrorClass, any>(admin);
+    } catch (error) {
+      if (error instanceof ApiError && error.status === 404) {
+        return Left<ErrorClass, AdminEntity>(ApiError.notFound());
+      }
+      return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
+    }
+    }
+   
 }

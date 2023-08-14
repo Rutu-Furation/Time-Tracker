@@ -1,7 +1,7 @@
 import mongoose from "mongoose";
 import ApiError from "@presentation/error-handling/api-error";
 import { Admin } from "@data/admin/models/admin-model";
-import {AdminEntity, AdminModel, AdminMapper } from "@domain/admin/entities/admin"; // Import the entity and mapper
+import {AdminEntity, AdminModel, AdminMapper, LoginModel } from "@domain/admin/entities/admin"; // Import the entity and mapper
 
 export interface AdminDataSource {
   create(admin: AdminModel): Promise<any>;
@@ -9,6 +9,7 @@ export interface AdminDataSource {
   getAllAdmins(): Promise<AdminEntity[]>;
   update(id: string, admin: AdminModel): Promise<any>; // Return type should be Promise of AdminEntity
   delete(id: string): Promise<void>;
+  login(email:string, password:string): Promise<any>;
 }
 
   export class AdminDataSourceImpl implements AdminDataSource {
@@ -61,5 +62,14 @@ export interface AdminDataSource {
 
     async delete(id: string): Promise<void> {
       await Admin.findByIdAndDelete(id);
+    }
+
+    async login(email: string, password: string): Promise<any> {
+      // const existingAdmin = await Admin.findOne({ email: admin.email });
+      const admin = await Admin.findOne({ email }).select("+password");
+      if (admin) {
+        throw ApiError.notFound();
+      }
+      return admin;
     }
   }

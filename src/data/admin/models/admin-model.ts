@@ -1,4 +1,7 @@
 import mongoose from "mongoose";
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
 
 const validateEmail = function (email: string) {
   var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
@@ -20,6 +23,14 @@ const adminSchema = new mongoose.Schema({
     lowercase: true,
     validate: [validateEmail, "Please fill a valid email address"],
   },
+
+  password: {
+    type: String,
+    required: [true, "Please enter a password"],
+    minlength: [6, "Password must be at least 6 characters"],
+    select: false,
+  },
+
   phoneNo: {
     type: Number,
     required: true,
@@ -65,5 +76,13 @@ const adminSchema = new mongoose.Schema({
     required: false,
   },
 });
+
+adminSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
+
 
 export const Admin = mongoose.model("Admin", adminSchema);

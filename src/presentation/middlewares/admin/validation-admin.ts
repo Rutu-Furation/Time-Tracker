@@ -5,6 +5,7 @@ import { Request, Response, NextFunction } from "express";
 interface AdminInput {
   fullName: string;
   email: string;
+  password: string;
   phoneNo: number;
   address: {
     streetName: string;
@@ -33,6 +34,7 @@ const adminValidator= function (input: AdminInput): AdminInput {
       "string.email": "Invalid email format",
       "any.required": "Email is required",
     }),
+    password: Joi.string().required().min(6),
     phoneNo: Joi.number().required().integer().max(9999999999999).messages({
       "number.base": "Phone number must be a number",
       "number.empty": "Phone number is required",

@@ -9,6 +9,7 @@ import { DeleteAdmin } from "@domain/admin/usecases/delete-admin";
 import { GetAdminById } from "@domain/admin/usecases/get-admin-by-id";
 import { GetAllAdmins } from "@domain/admin/usecases/get-all-admins";
 import { UpdateAdmin } from "@domain/admin/usecases/update-admin";
+import { LoginAdmin } from "@domain/admin/usecases/login-admin";
 import {validateAdminInputMiddleware } from "@presentation/middlewares/admin/validation-admin";
 // import { authorziedUser } from "@presentation/middlewares/auth-middleware";
 // import adminView from "@presentation/Auth/admin-auth";
@@ -26,6 +27,7 @@ const deleteAdminUsecase = new DeleteAdmin(adminRepository);
 const getAdminByIdUsecase = new GetAdminById(adminRepository);
 const updateAdminUsecase = new UpdateAdmin(adminRepository);
 const getAllAdminsUsecase = new GetAllAdmins(adminRepository);
+const loginAdminUsecase = new LoginAdmin(adminRepository);
 
 // Initialize AdminService and inject required dependencies
 const adminService = new AdminService(
@@ -33,7 +35,8 @@ const adminService = new AdminService(
   deleteAdminUsecase,
   getAdminByIdUsecase,
   updateAdminUsecase,
-  getAllAdminsUsecase
+  getAllAdminsUsecase,
+  loginAdminUsecase
 );
 
 // Create an Express router
@@ -70,6 +73,13 @@ adminRouter.delete(
   "/delete/:adminId",
   adminService.deleteAdmin.bind(adminService)
 );
+
+adminRouter.post(
+  "/login",
+  adminService.loginAdmin.bind(adminService)
+);
+
+
 
 
 
