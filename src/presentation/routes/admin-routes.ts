@@ -12,8 +12,7 @@ import { UpdateAdmin } from "@domain/admin/usecases/update-admin";
 import { LoginAdmin } from "@domain/admin/usecases/login-admin";
 import {validateAdminInputMiddleware } from "@presentation/middlewares/admin/validation-admin";
 import { isAuthenticated } from "@presentation/middlewares/auth";
-// import { authorziedUser } from "@presentation/middlewares/auth-middleware";
-// import adminView from "@presentation/Auth/admin-auth";
+
 
 const mongooseConnection = mongoose.connection;
 

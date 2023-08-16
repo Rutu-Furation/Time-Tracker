@@ -100,4 +100,3 @@ export const validateAdminInputMiddleware = (
 
 export default adminValidator;
 
-// The validateAdminInputMiddleware and other related code remains unchanged from your provided code.

@@ -83,17 +83,5 @@ export class AdminRepositoryImpl implements AdminRepository {
     }
   }
 }
-  // async login(email:string, password:string): Promise<any> {
-  //   try {
-  //     const res = await this.dataSource.login(email, password);
-     
-      
-  //     return Right<ErrorClass, any>(res);
-  //   } catch (error) {
-  //     if (error instanceof ApiError && error.status === 404) {
-  //       return Left<ErrorClass, AdminEntity>(ApiError.notFound());
-  //     }
-  //     return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
-  //   }
-  //   }
+  
    
