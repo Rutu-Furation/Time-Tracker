@@ -38,11 +38,7 @@ class ApiError extends ErrorClass {
   }
 
   static delete(): ApiError {
-    return new ApiError(
-      HttpStatus.OK,
-      ErrorMessage.DELETED_SUCCESS,
-      "Deleted"
-    );
+    return new ApiError(HttpStatus.OK, ErrorMessage.DELETED_SUCCESS, "Deleted");
   }
 
   static noContent(): ApiError {
@@ -58,6 +54,14 @@ class ApiError extends ErrorClass {
       HttpStatus.NOT_FOUND,
       ErrorMessage.NOT_FOUND,
       "notfound"
+    );
+  }
+
+  static adminNotFound(): ApiError {
+    return new ApiError(
+      HttpStatus.NOT_FOUND,
+      ErrorMessage.ADMIN_NOT_FOUND,
+      "adminnotfound"
     );
   }
 
@@ -106,18 +110,12 @@ class ApiError extends ErrorClass {
     );
   }
 
-  static awsPresigningError(): ApiError {
-    return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.AWS_PRESIGN_ERROR, "awsPresigningError");
-  }
- static forbidden(): ApiError {
+  static forbidden(): ApiError {
     return new ApiError(
       HttpStatus.FORBIDDEN,
       ErrorMessage.FORBIDDEN,
       "forbidden"
     );
-  }
-  static brandLogoDeletionError(): ApiError {
-    return new ApiError(HttpStatus.INTERNAL_SERVER_ERROR, ErrorMessage.BRAND_LOGO_DELETION_ERROR, "brandLogoDeletionError");
   }
 }
 
