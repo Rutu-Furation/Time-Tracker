@@ -1,18 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-<<<<<<< HEAD
 import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel} from "@domain/employee/entities/employee";
-=======
-import {EmployeeModel,EmployeeEntity,EmployeeMapper,} from "@domain/employee/entities/employee";
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 import { CreateEmployeeUsecase } from "@domain/employee/usecases/create-employee";
 import { DeleteEmployeeUsecase } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-by-id";
 import { UpdateEmployeeUsecase } from "@domain/employee/usecases/update-Employee";
 import { GetAllEmployeesUsecase } from "@domain/employee/usecases/get-all-employee";
-<<<<<<< HEAD
 import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
@@ -23,32 +16,24 @@ export class EmployeeService {
   private readonly GetEmployeeByIdUsecase: GetEmployeeByIdUsecase;
   private readonly UpdateEmployeeUsecase: UpdateEmployeeUsecase;
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
-<<<<<<< HEAD
   private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
     DeleteEmployeeUsecase: DeleteEmployeeUsecase,
     GetEmployeeByIdUsecase: GetEmployeeByIdUsecase,
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
-<<<<<<< HEAD
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
     LoginEmployeeUsecase: LoginEmployeeUsecase
-=======
-    GetAllEmployeesUsecase: GetAllEmployeesUsecase
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
+    
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
     this.GetEmployeeByIdUsecase = GetEmployeeByIdUsecase;
     this.UpdateEmployeeUsecase = UpdateEmployeeUsecase;
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
-<<<<<<< HEAD
+
     this.LoginEmployeeUsecase = LoginEmployeeUsecase;
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
@@ -161,27 +146,57 @@ export class EmployeeService {
       }
     );
   }
-<<<<<<< HEAD
 
   async loginEmployee(req: Request, res: Response): Promise<void> {
+    const { email, password } = req.body;
 
-    const {email, password} = req.body;
-    
-    const employee: Either<ErrorClass, any> =
-    await this.LoginEmployeeUsecase.execute(email, password);
-    console.log(employee);
+    const employeeResult: Either<ErrorClass, any> = await this.LoginEmployeeUsecase.execute(email, password);
 
-    employee.cata(
-      (error: ErrorClass) =>
-        res.status(error.status).json({ error: error.message }),
-      (result: EmployeeEntity) => {
-        // Generate and send JWT token
-        // const token = this.generateJWTToken(result); // Implement this function
-        const resData = { employee: EmployeeMapper.toEntity(result, true)};
-        return res.json(resData);
-      }
+    employeeResult.cata(
+        (error: ErrorClass) => {
+            res.status(error.status).json({ error: error.message });
+        },
+        async (employee: any) => {
+        
+            const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
+            if (!isMatch) {
+                const err =  ApiError.forbidden();
+                return res.status(err.status).json(err.message);
+            }
+
+            const token = await employee.generateToken();
+            console.log(token);
+
+            
+            const options = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                httpOnly: true,
+            };
+
+            const resData = { employee: EmployeeMapper.toEntity(employee, true) };
+            res.cookie("token" , token, options).json(resData);
+        }
     );
-  }
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
+}
+
+  // async loginEmployee(req: Request, res: Response): Promise<void> {
+
+  //   const {email, password} = req.body;
+    
+  //   const employee: Either<ErrorClass, any> =
+  //   await this.LoginEmployeeUsecase.execute(email, password);
+
+  //   employee.cata(
+  //     (error: ErrorClass) =>
+  //       res.status(error.status).json({ error: error.message }),
+  //     (result: EmployeeEntity) => {
+
+       
+  //       // Generate and send JWT token
+  //       // const token = this.generateJWTToken(result); // Implement this function
+  //       const resData = { employee: EmployeeMapper.toEntity(result, true)};
+  //       return res.json(resData);
+  //     }
+  //   );
+  // }
 }

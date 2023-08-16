@@ -9,16 +9,13 @@ import { DeleteEmployee } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeById } from "@domain/employee/usecases/get-employee-by-id";
 import { GetAllEmployees } from "@domain/employee/usecases/get-all-employee";
 import { UpdateEmployee } from "@domain/employee/usecases/update-Employee";
-<<<<<<< HEAD
 import { LoginEmployee } from "@domain/employee/usecases/login-employee";
 import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
+import { isAuthenticated } from "@presentation/middlewares/auth";
 
 
 
 
-=======
-import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 // const dbURL =
 //   "mongodb+srv://mongodb+srv://satansharma:satansharma@cluster0.ncc9mtu.mongodb.net/?retryWrites=true&w=majority"; // Replace with your actual MongoDB connection URL
 
@@ -35,11 +32,9 @@ import validateEmployeeMiddleware from "@presentation/middlewares/employee/valid
 //   console.log("Connected to MongoDB successfully!");
 // });
 
-<<<<<<< HEAD
 const mongooseconnection = mongoose.Connection;
 
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
+
 // Create an instance of the EmployeeDataSourceImpl and pass the mongoose connection
 const employeeDataSource = new EmployeeDataSourceImpl(mongoose.connection);
 
@@ -52,10 +47,8 @@ const deleteEmployeeUsecase = new DeleteEmployee(employeeRepository);
 const getEmployeeByIdUsecase = new GetEmployeeById(employeeRepository);
 const updateEmployeeUsecase = new UpdateEmployee(employeeRepository);
 const getAllEmployeesUsecase = new GetAllEmployees(employeeRepository);
-<<<<<<< HEAD
+
 const LoginEmployeeUsecase = new LoginEmployee(employeeRepository);
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 
 // Initialize employeeService and inject required dependencies
 const employeeService = new EmployeeService(
@@ -63,12 +56,8 @@ const employeeService = new EmployeeService(
   deleteEmployeeUsecase,
   getEmployeeByIdUsecase,
   updateEmployeeUsecase,
-<<<<<<< HEAD
   getAllEmployeesUsecase,
   LoginEmployeeUsecase
-=======
-  getAllEmployeesUsecase
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 );
 
 // Create an Express router
@@ -88,9 +77,6 @@ employeeRouter.delete("/:employeeId", employeeService.deleteEmployee.bind(employ
 
 // Route handling for getting all Employees
 employeeRouter.get("/", employeeService.getAllEmployees.bind(employeeService));
-<<<<<<< HEAD
 
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
-=======
->>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548

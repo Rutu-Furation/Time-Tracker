@@ -122,6 +122,12 @@ employeeSchema.pre("save",async function(next){
   }
   next();
 });
+employeeSchema.methods.matchPassword = async function (password:string) {
+  return await bcrypt.compare(password, this.password);
+};
 
+employeeSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+};
 
 export const Employee = mongoose.model("Employee", employeeSchema);
