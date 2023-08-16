@@ -1,11 +1,18 @@
 import { NextFunction, Request, Response } from "express";
+<<<<<<< HEAD
 import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel} from "@domain/employee/entities/employee";
+=======
+import {EmployeeModel,EmployeeEntity,EmployeeMapper,} from "@domain/employee/entities/employee";
+>>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 import { CreateEmployeeUsecase } from "@domain/employee/usecases/create-employee";
 import { DeleteEmployeeUsecase } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-by-id";
 import { UpdateEmployeeUsecase } from "@domain/employee/usecases/update-Employee";
 import { GetAllEmployeesUsecase } from "@domain/employee/usecases/get-all-employee";
+<<<<<<< HEAD
 import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
+=======
+>>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
@@ -16,22 +23,32 @@ export class EmployeeService {
   private readonly GetEmployeeByIdUsecase: GetEmployeeByIdUsecase;
   private readonly UpdateEmployeeUsecase: UpdateEmployeeUsecase;
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
+<<<<<<< HEAD
   private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
+=======
+>>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
     DeleteEmployeeUsecase: DeleteEmployeeUsecase,
     GetEmployeeByIdUsecase: GetEmployeeByIdUsecase,
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
+<<<<<<< HEAD
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
     LoginEmployeeUsecase: LoginEmployeeUsecase
+=======
+    GetAllEmployeesUsecase: GetAllEmployeesUsecase
+>>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
     this.GetEmployeeByIdUsecase = GetEmployeeByIdUsecase;
     this.UpdateEmployeeUsecase = UpdateEmployeeUsecase;
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
+<<<<<<< HEAD
     this.LoginEmployeeUsecase = LoginEmployeeUsecase;
+=======
+>>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
@@ -144,6 +161,7 @@ export class EmployeeService {
       }
     );
   }
+<<<<<<< HEAD
 
   async loginEmployee(req: Request, res: Response): Promise<void> {
 
@@ -164,4 +182,6 @@ export class EmployeeService {
       }
     );
   }
+=======
+>>>>>>> f977db7bf512e096c3c263f60c00f1a89c864548
 }
