@@ -1,15 +1,5 @@
 import { NextFunction, Request, Response } from "express";
-// import {
-//   AttendanceModel,
-//   AttendanceEntity,
-//   AttendanceMapper,
-// } from "@domain/admin/entities/admin";
 
-// import { CreateAdminUsecase } from "@domain/admin/usecases/create-admin";
-// import { DeleteAdminUsecase } from "@domain/admin/usecases/delete-admin";
-// import { GetAdminByIdUsecase } from "@domain/admin/usecases/get-admin-by-id";
-// import { UpdateAdminUsecase } from "@domain/admin/usecases/update-admin";
-// import { GetAllAdminsUsecase } from "@domain/admin/usecases/get-all-admins";
 import {
   AttendanceModel,
   AttendanceEntity,
@@ -18,7 +8,7 @@ import {
 import ApiError from "@presentation/error-handling/api-error";
 import { CreateAttendance } from "@domain/attendence/usecases/create-attendance";
 import { Attendance } from "@data/attendance/models/attendance-models";
-
+ 
 // get the current time
 function formatCurrentTime() {
   const now = new Date();
@@ -40,6 +30,19 @@ function getCurrentDate() {
   return formattedDate;
 }
 
+// time difference
+function calculateTimeDifference(time1: string, time2: string) {
+  const [h1, m1, s1] = time1.split(":").map(Number);
+  const [h2, m2, s2] = time2.split(":").map(Number);
+  const totalSeconds1 = h1 * 3600 + m1 * 60 + s1;
+  const totalSeconds2 = h2 * 3600 + m2 * 60 + s2;
+  const timeDifferenceSeconds = Math.abs(totalSeconds2 - totalSeconds1);
+  const hours = Math.floor(timeDifferenceSeconds / 3600);
+  const minutes = Math.floor((timeDifferenceSeconds % 3600) / 60);
+  const seconds = timeDifferenceSeconds % 60;
+  return { hours, minutes, seconds };
+}
+
 export class AttendanceService {
   private readonly createAttendanceUsecase: CreateAttendance;
 
@@ -54,8 +57,7 @@ export class AttendanceService {
       const currentTime = formatCurrentTime();
       const payload = { ...req.body, Date: currentDate, Check_in: currentTime };
       const adminData: AttendanceModel = AttendanceMapper.toModel(payload);
-      // Call the CreateAdminUsecase to create the admin
-      console.log("adminData", adminData);
+
       const newAdmin: AttendanceEntity =
         await this.createAttendanceUsecase.execute(adminData);
       // Convert newAdmin from AttendanceEntity to the desired format using AttendanceMapper
@@ -76,18 +78,24 @@ export class AttendanceService {
     const currentDate = getCurrentDate();
     const user = await Attendance.find({ Date: currentDate });
 
-    // const currentDayDetails = user.find(
-    //   (x) => x.Date.toString() == currentDate
-    // );
-    // console.log(user);
     const id = user[0]?._id;
-    console.log(id,"id")
+
+    const check_inTime = user[0]?.Check_in;
+    const { hours, minutes, seconds } = calculateTimeDifference(
+      check_inTime,
+      currentTime
+    );
+    const Duration = `${hours}:${minutes}:${seconds}`;
+
     try {
-      await Attendance.findByIdAndUpdate(id, { Check_out: currentTime });
+      await Attendance.findByIdAndUpdate(id, {
+        Check_out: currentTime,
+        Duration: Duration,
+      });
       res.send({ msg: `check-out successfully.` });
     } catch (err: any) {
-      res.send({
-        msg: "somthing went wrong! cannot update",
+      res.send({ 
+        msg: "somthing went wrong! cannot checkout.",
         error: err.message,
       });
     }
