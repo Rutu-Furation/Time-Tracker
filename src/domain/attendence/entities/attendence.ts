@@ -5,7 +5,8 @@ export class AttendanceModel {
     public Date: Date | string = "",
     public Duration: string = "",
     public Status: boolean = false,
-    public Remarks: string = ""
+    public Remarks: string = "",
+    public User_id: string = ""
   ) {}
 }
 
@@ -79,6 +80,7 @@ export class AttendanceMapper {
     return {
       Check_in: attendance.Check_in,
       Check_out: attendance.Check_out,
+      User_id: attendance.User_id,
       Date: attendance.Date,
       Duration: attendance.Duration,
       Status: attendance.Status,

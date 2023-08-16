@@ -53,9 +53,11 @@ export class AttendanceService {
   async createAttendance(req: Request, res: Response): Promise<void> {
     try {
       // Extract admin data from the request body and convert it to AttendanceModel
+      
       const currentDate = getCurrentDate();
       const currentTime = formatCurrentTime();
       const payload = { ...req.body, Date: currentDate, Check_in: currentTime };
+      console.log(payload)
       const adminData: AttendanceModel = AttendanceMapper.toModel(payload);
 
       const newAdmin: AttendanceEntity =

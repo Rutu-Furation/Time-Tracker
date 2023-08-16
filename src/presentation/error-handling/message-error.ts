@@ -30,4 +30,8 @@ export const AWS_PRESIGN_ERROR = "unable to create presigned URL";
 
 export const BRAND_LOGO_DELETION_ERROR = "unable to delete brand logo";
 
+export const ADMIN_NOT_FOUND = "Admin does not exit";
+
+export const EMPLOYEE_NOT_FOUND = "Employee does not exit";
+
 

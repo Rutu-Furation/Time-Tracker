@@ -23,6 +23,7 @@ interface CustomRequest extends Request {
     contact_number: Joi.number().max(9999999999999).required(),
     address: addressSchema,
     department: Joi.string().min(3).max(50).required(),
+    designation: Joi.string().min(3).max(50).required(),
     joining_date: Joi.date().required(),
     profile_picture: Joi.string().allow('').optional(),
     attendance_id: Joi.string().required(),

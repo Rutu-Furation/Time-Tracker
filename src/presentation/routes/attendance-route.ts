@@ -5,6 +5,7 @@ import { AttendanceService } from "@presentation/services/attendance-service";
 import { AttendanceRepositoryImpl } from "@data/attendance/repositories/attendance-repository-impl";
 import { AttendanceSourceImpl } from "@data/attendance/datasources/attendance-datasource";
 import { CreateAttendance } from "@domain/attendence/usecases/create-attendance";
+import { isAuthenticatedUser } from "@presentation/middlewares/userAuth";
 
 
 // Create an instance of the EmployeeDataSourceImpl and pass the mongoose connection
@@ -23,6 +24,7 @@ const attendanceService = new AttendanceService(
 );
 
 export const attendanceRouter = Router();
-attendanceRouter.post("/check-in", attendanceService.createAttendance.bind(attendanceService)),
-attendanceRouter.patch("/check-out", attendanceService.updateAttendance.bind(attendanceService))
+
+attendanceRouter.post("/check-in",isAuthenticatedUser,  attendanceService.createAttendance.bind(attendanceService)),
+attendanceRouter.patch("/check-out",isAuthenticatedUser, attendanceService.updateAttendance.bind(attendanceService))
 // Create an Express router
