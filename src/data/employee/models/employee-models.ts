@@ -1,4 +1,12 @@
 import mongoose from "mongoose";
+const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
+const crypto = require("crypto");
+
+const validateEmail = function (email:string) {
+  var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
+  return re.test(email);
+}
 
 
 const addressSchema = new mongoose.Schema({
@@ -71,6 +79,13 @@ const employeeSchema = new mongoose.Schema({
         required: [true, "please enter department "],
         trim: true,
       },
+      designation: {
+        type: String,
+        maxlength: [50, "Maximum 50 charcters are permitted"],
+        minLength: [3, "designation  should have more than 3 character"],
+        required: [true, "please enter designation "],
+        trim: true,
+      },
       joining_date: {
         type: Date, 
         required: [true, "please enter joining_date "],
@@ -100,6 +115,13 @@ const employeeSchema = new mongoose.Schema({
       
     }
 );
+
+employeeSchema.pre("save",async function(next){
+  if(this.isModified("password")) {
+    this.password = await bcrypt.hash(this.password, 10);
+  }
+  next();
+});
 
 
 export const Employee = mongoose.model("Employee", employeeSchema);

@@ -8,6 +8,7 @@ export class EmployeeModel {
         public contact_number:string = "",
         public address:string = "",
         public department:string = "",
+        public designation:string = "",
         public joining_date:string = "",
         public profile_picture:string = "",
         public attendance_id:string = "",
@@ -18,6 +19,14 @@ export class EmployeeModel {
 
     ) {}
 }
+export class LoginModel {
+    constructor(
+      
+      public email: string = "",
+      public password: string = "",
+    
+    ) {}
+  }
 
 // Employee Entity provided by Employee Repository is converted to Express API Response
 export class EmployeeEntity{
@@ -29,6 +38,7 @@ export class EmployeeEntity{
         public contact_number:string ,
         public address:string ,
         public department:string ,
+        public designation:string ,
         public joining_date:string ,
         public profile_picture:string, 
         public attendance_id:string ,
@@ -37,6 +47,12 @@ export class EmployeeEntity{
     ) {}
 }
 
+export class LoginEntity {
+  constructor(
+    public email: string,
+    public password: string,
+  ) {}
+}
 
 export class EmployeeMapper {
     static toEntity(
@@ -60,6 +76,8 @@ export class EmployeeMapper {
             employeeData.address !==undefined ? employeeData.address : existingEmployee.address,
             department:
             employeeData.department !==undefined ? employeeData.department : existingEmployee.department,
+            designation:
+            employeeData.designation !==undefined ? employeeData.designation : existingEmployee.designation,
             joining_date:
             employeeData.joining_date !==undefined ? employeeData.joining_date : existingEmployee.joining_date,
             profile_picture:
@@ -82,6 +100,7 @@ export class EmployeeMapper {
                 contact_number: employeeData.contact_number,
                 address: employeeData.address,
                 department: employeeData.department,
+                designation: employeeData.designation,
                 joining_date: employeeData.joining_date,
                 profile_picture: employeeData.profile_picture,
                 attendance_id: employeeData.attendance_id,
@@ -102,6 +121,7 @@ export class EmployeeMapper {
                 contact_number: employee.contact_number,
                 address: employee.address,
                 department: employee.department,
+                designation: employee.designation,
                 joining_date: employee.joining_date,
                 profile_picture: employee.profile_picture,
                 attendance_id: employee.attendance_id,
