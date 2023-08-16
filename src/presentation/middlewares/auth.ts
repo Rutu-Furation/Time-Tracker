@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JsonWebTokenError } from "jsonwebtoken"; // Import JsonWebTokenError
 import { Admin } from "@data/admin/models/admin-model";
+import { Employee } from "@data/attendance/models/attendance-models";
 
 export const isAuthenticated = async (
   req: Request,
@@ -24,6 +25,10 @@ export const isAuthenticated = async (
       // Cast error to JsonWebTokenError type
       req.user = await Admin.findById(decoded._id);
       next();
+
+      req.user = await Employee.findById(decoded._id);
+      next();
+
     }
   } catch (error) {
     const jwtError = error as JsonWebTokenError; // Cast error to JsonWebTokenError type

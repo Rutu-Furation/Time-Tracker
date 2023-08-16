@@ -64,6 +64,13 @@ class ApiError extends ErrorClass {
       "adminnotfound"
     );
   }
+  static employeeNotFound(): ApiError {
+    return new ApiError(
+      HttpStatus.NOT_FOUND,
+      ErrorMessage.EMPLOYEE_NOT_FOUND,
+      "employeenotfound"
+    );
+  }
 
   static badRequest(): ApiError {
     return new ApiError(

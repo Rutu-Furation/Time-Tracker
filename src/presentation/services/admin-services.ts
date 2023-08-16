@@ -155,7 +155,6 @@ export class AdminService {
             res.status(error.status).json({ error: error.message });
         },
         async (admin: any) => {
-            console.log(admin);
         
             const isMatch = await admin.matchPassword(password); // You should define the matchPassword method in AdminEntity
             if (!isMatch) {

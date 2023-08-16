@@ -1,10 +1,11 @@
 import { NextFunction, Request, Response } from "express";
-import {EmployeeModel,EmployeeEntity,EmployeeMapper,} from "@domain/employee/entities/employee";
+import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel} from "@domain/employee/entities/employee";
 import { CreateEmployeeUsecase } from "@domain/employee/usecases/create-employee";
 import { DeleteEmployeeUsecase } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-by-id";
 import { UpdateEmployeeUsecase } from "@domain/employee/usecases/update-Employee";
 import { GetAllEmployeesUsecase } from "@domain/employee/usecases/get-all-employee";
+import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
@@ -15,19 +16,24 @@ export class EmployeeService {
   private readonly GetEmployeeByIdUsecase: GetEmployeeByIdUsecase;
   private readonly UpdateEmployeeUsecase: UpdateEmployeeUsecase;
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
+  private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
 
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
     DeleteEmployeeUsecase: DeleteEmployeeUsecase,
     GetEmployeeByIdUsecase: GetEmployeeByIdUsecase,
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
-    GetAllEmployeesUsecase: GetAllEmployeesUsecase
+    GetAllEmployeesUsecase: GetAllEmployeesUsecase,
+    LoginEmployeeUsecase: LoginEmployeeUsecase
+    
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
     this.GetEmployeeByIdUsecase = GetEmployeeByIdUsecase;
     this.UpdateEmployeeUsecase = UpdateEmployeeUsecase;
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
+
+    this.LoginEmployeeUsecase = LoginEmployeeUsecase;
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
@@ -140,4 +146,57 @@ export class EmployeeService {
       }
     );
   }
+
+  async loginEmployee(req: Request, res: Response): Promise<void> {
+    const { email, password } = req.body;
+
+    const employeeResult: Either<ErrorClass, any> = await this.LoginEmployeeUsecase.execute(email, password);
+
+    employeeResult.cata(
+        (error: ErrorClass) => {
+            res.status(error.status).json({ error: error.message });
+        },
+        async (employee: any) => {
+        
+            const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
+            if (!isMatch) {
+                const err =  ApiError.forbidden();
+                return res.status(err.status).json(err.message);
+            }
+
+            const token = await employee.generateToken();
+            console.log(token);
+
+            
+            const options = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                httpOnly: true,
+            };
+
+            const resData = { employee: EmployeeMapper.toEntity(employee, true) };
+            res.cookie("token" , token, options).json(resData);
+        }
+    );
+}
+
+  // async loginEmployee(req: Request, res: Response): Promise<void> {
+
+  //   const {email, password} = req.body;
+    
+  //   const employee: Either<ErrorClass, any> =
+  //   await this.LoginEmployeeUsecase.execute(email, password);
+
+  //   employee.cata(
+  //     (error: ErrorClass) =>
+  //       res.status(error.status).json({ error: error.message }),
+  //     (result: EmployeeEntity) => {
+
+       
+  //       // Generate and send JWT token
+  //       // const token = this.generateJWTToken(result); // Implement this function
+  //       const resData = { employee: EmployeeMapper.toEntity(result, true)};
+  //       return res.json(resData);
+  //     }
+  //   );
+  // }
 }
