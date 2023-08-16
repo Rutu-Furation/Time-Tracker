@@ -12,7 +12,7 @@ import { UpdateAdminUsecase } from "@domain/admin/usecases/update-admin";
 import { GetAllAdminsUsecase } from "@domain/admin/usecases/get-all-admins";
 import { LoginAdminUsecase } from "@domain/admin/usecases/login-admin";
 
-import { ErrorClass } from "@presentation/error-handling/api-error";
+import ApiError, { ErrorClass } from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 
 export class AdminService {
@@ -146,24 +146,104 @@ export class AdminService {
   }
 
   async loginAdmin(req: Request, res: Response): Promise<void> {
+    const { email, password } = req.body;
 
-    const {email, password} = req.body;
-    
-    const admin: Either<ErrorClass, any> =
-    await this.loginAdminUsecase.execute({email, password});
-    console.log(admin);
+    const adminResult: Either<ErrorClass, any> = await this.loginAdminUsecase.execute(email, password);
 
-    admin.cata(
-      (error: ErrorClass) =>
-        res.status(error.status).json({ error: error.message }),
-      (result: AdminEntity) => {
-        // Generate and send JWT token
-        // const token = this.generateJWTToken(result); // Implement this function
-        const resData = { admin: AdminMapper.toEntity(result, true)};
-        return res.json(resData);
-      }
+    adminResult.cata(
+        (error: ErrorClass) => {
+            res.status(error.status).json({ error: error.message });
+        },
+        async (admin: any) => {
+            console.log(admin);
+        
+            const isMatch = await admin.matchPassword(password); // You should define the matchPassword method in AdminEntity
+            if (!isMatch) {
+                const err =  ApiError.forbidden();
+                return res.status(err.status).json(err.message);
+            }
+
+            const token = await admin.generateToken();
+            console.log(token);
+
+            
+            const options = {
+                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+                httpOnly: true,
+            };
+
+            const resData = { admin: AdminMapper.toEntity(admin, true) };
+            res.cookie("token" , token, options).json(resData);
+        }
     );
-  }
+}
+}
+
+  // async loginAdmin(req: Request, res: Response): Promise<void> {
+  //   const { email, password } = req.body;
+
+  //   const adminResult: Either<ErrorClass, any> = await this.loginAdminUsecase.execute(email, password);
+
+  //   adminResult.cata(
+  //     (error: ErrorClass) => {
+  //       res.status(error.status).json({ error: error.message });
+  //     },
+  //     async (admin: any) => {
+  //       console.log(admin);
+        
+  //       const isMatch = await admin.matchPassword(password); // You should define the matchPassword method in AdminEntity
+  //        if (!isMatch) {
+  //         throw ApiError.forbidden();
+  //       }
+
+  //       const token = await admin.generateToken();
+
+  //       const options = {
+  //           expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+  //           httpOnly: true,
+  //       }
+
+  //       res.status(200).cookie("token", token, options).json({
+  //           success: true,
+  //           admin,
+  //           token,
+  //       })
+  //     }
+  //     const resData = { admin: AdminMapper.toEntity(admin, true) };
+  //     res.json(resData);
+  //     }
+    
+  // }
+
+
+
+
+
+  // async loginAdmin(req: Request, res: Response): Promise<void> {
+
+  //   const {email, password} = req.body;
+    
+  //   const admin: Either<ErrorClass, any> =
+  //   await this.loginAdminUsecase.execute(email, password);
+  //   console.log(admin, "line154");
+
+  //   const isMatch = await admin.matchPassword(password);
+
+  //   if (!isMatch) {
+  //     throw ApiError.forbidden();
+  //   }
+  //   // const isMatch = await admin.matchPassword(password);
+  //   admin.cata(
+  //     (error: ErrorClass) =>
+  //       res.status(error.status).json({ error: error.message }),
+  //     (result: AdminEntity) => {
+  //       // Generate and send JWT token
+  //       // const token = this.generateJWTToken(result); // Implement this function
+  //       const resData = { admin: AdminMapper.toEntity(result, true)};
+  //       return res.json(resData);
+  //     }
+  //   );
+  // }
 
   // private generateJWTToken(admin: AdminEntity): string {
   //   // Generate and return a JWT token here
@@ -173,4 +253,4 @@ export class AdminService {
   //   });
   //   return token;
   // }
- }
+ 

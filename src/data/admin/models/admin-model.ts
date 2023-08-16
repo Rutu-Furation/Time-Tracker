@@ -83,6 +83,12 @@ adminSchema.pre("save", async function (next) {
   }
   next();
 });
+adminSchema.methods.matchPassword = async function (password:string) {
+  return await bcrypt.compare(password, this.password);
+};
+adminSchema.methods.generateToken = function () {
+  return jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
+};
 
 
 export const Admin = mongoose.model("Admin", adminSchema);

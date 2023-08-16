@@ -65,11 +65,29 @@ export interface AdminDataSource {
     }
 
     async login(email: string, password: string): Promise<any> {
-      // const existingAdmin = await Admin.findOne({ email: admin.email });
-      const admin = await Admin.findOne({ email }).select("+password");
-      if (admin) {
-        throw ApiError.notFound();
-      }
-      return admin;
+    // const existingAdmin = await Admin.findOne({ email: admin.email });
+    const admin = await Admin.findOne({ email }).select("+password");
+    
+    if (!admin) {
+        throw ApiError.adminNotFound();
     }
-  }
+     return admin;
+}
+}
+
+//     async login(email: string, password: string): Promise<any> {
+//       // const existingAdmin = await Admin.findOne({ email: admin.email });
+//       const admin = await Admin.findOne({ email }).select("+password");
+      
+//        if (!admin) {
+//         throw ApiError.adminNotFound()
+//        }
+//        return admin;
+//     }
+
+//     const isMatch = await admin.matchPassword(password: string);
+
+// if (!isMatch) {
+//   throw ApiError.forbidden()
+//     }
+//     return admin;

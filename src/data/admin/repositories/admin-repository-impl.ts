@@ -1,6 +1,6 @@
 import { AdminModel, AdminEntity, LoginEntity, LoginModel } from "@domain/admin/entities/admin";
 import { AdminRepository } from "@domain/admin/repositories/admin-repository";
-import { AdminDataSource } from "@data/admin/datasources/admin-data-source";
+import { AdminDataSource, AdminDataSourceImpl } from "@data/admin/datasources/admin-data-source";
 import ApiError, { ErrorClass } from "@presentation/error-handling/api-error";
 import { Either, Left, Right } from "monet";
 
@@ -70,18 +70,30 @@ export class AdminRepositoryImpl implements AdminRepository {
     }
   }
 
-  async login(email:string, password:string): Promise<any> {
+  async login(email: string, password: string): Promise<Either<ErrorClass, AdminEntity>> {
     try {
       const res = await this.dataSource.login(email, password);
-     
-      
-      return Right<ErrorClass, any>(admin);
+
+      return Right<ErrorClass, AdminEntity>(res);
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
         return Left<ErrorClass, AdminEntity>(ApiError.notFound());
       }
       return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
     }
-    }
-   
+  }
 }
+  // async login(email:string, password:string): Promise<any> {
+  //   try {
+  //     const res = await this.dataSource.login(email, password);
+     
+      
+  //     return Right<ErrorClass, any>(res);
+  //   } catch (error) {
+  //     if (error instanceof ApiError && error.status === 404) {
+  //       return Left<ErrorClass, AdminEntity>(ApiError.notFound());
+  //     }
+  //     return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
+  //   }
+  //   }
+   
