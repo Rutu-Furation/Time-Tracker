@@ -12,8 +12,6 @@ async function connectToDatabase() {
   const dbURL = env.mongoUrl;
   const dbOptions = env.dbOptions;
 
- 
-
   try {
     if (dbURL === undefined || dbOptions === undefined) {
       throw ApiError.mongoError();

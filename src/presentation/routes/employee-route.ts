@@ -19,18 +19,6 @@ import { isAuthenticated } from "@presentation/middlewares/auth";
 // const dbURL =
 //   "mongodb+srv://mongodb+srv://satansharma:satansharma@cluster0.ncc9mtu.mongodb.net/?retryWrites=true&w=majority"; // Replace with your actual MongoDB connection URL
 
-// // Set up the required options for the connection
-// const dbOptions = {
-//   useNewUrlParser: true,
-//   useUnifiedTopology: true,
-//   dbName: "myDatabase", // Replace with the name of your database
-//   // Other options like user and password can also be added if necessary
-// };
-
-// // Create the mongoose connection
-// mongoose.connect(dbURL, dbOptions).then(() => {
-//   console.log("Connected to MongoDB successfully!");
-// });
 
 const mongooseconnection = mongoose.Connection;
 
