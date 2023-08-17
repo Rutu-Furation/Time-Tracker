@@ -15,8 +15,8 @@ import { LogoutAdminUsecase } from "@domain/admin/usecases/logout-admin";
 
 import ApiError, { ErrorClass } from "@presentation/error-handling/api-error";
 import { Either } from "monet";
-import { log } from "console";
-import crypto from "crypto";
+import { generateRandomPassword } from "@presentation/middlewares/randomPassword";
+
 
 export class AdminService {
   private readonly createAdminUsecase: CreateAdminUsecase;
@@ -46,24 +46,18 @@ export class AdminService {
   }
 
   async createAdmin(req: Request, res: Response): Promise<void> {
+
+    const randomPassword = generateRandomPassword(5)
+
+    req.body.password = randomPassword;
+
+    console.log(req.body, "Line 54")
+
     const adminData: AdminModel = AdminMapper.toModel(req.body);
+    
     const newAdmin: Either<ErrorClass, AdminEntity> =
       await this.createAdminUsecase.execute(adminData);
-    const generateRandomPassword = (length: number): string => {
-      const charset =
-        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
-      let password = "";
-
-      for (let i = 0; i < length; i++) {
-        const randomIndex = crypto.randomInt(0, charset.length);
-        password += charset.charAt(randomIndex);
-      }
-
-      return password;
-    };
-
-    const randomPassword = generateRandomPassword(8);
-    console.log(randomPassword);
+    
     newAdmin.cata(
       (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
@@ -175,8 +169,6 @@ export class AdminService {
         res.status(error.status).json({ error: error.message });
       },
       async (admin: any) => {
-        console.log(admin);
-
         const isMatch = await admin.matchPassword(password); // You should define the matchPassword method in AdminEntity
         if (!isMatch) {
           const err = ApiError.forbidden();
@@ -184,7 +176,6 @@ export class AdminService {
         }
 
         const token = await admin.generateToken();
-        console.log(token);
 
         const options = {
           expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
@@ -217,5 +208,7 @@ export class AdminService {
       });
     }
   }
+  export = generateRandomPassword;
 }
+
 

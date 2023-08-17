@@ -73,7 +73,7 @@ export class AdminDataSourceImpl implements AdminDataSource {
   async login(email: string, password: string): Promise<any> {
     // const existingAdmin = await Admin.findOne({ email: admin.email });
     const admin = await Admin.findOne({ email }).select("+password");
-    console.log(admin);
+    
     
 
     if (!admin) {
