@@ -11,9 +11,12 @@ import { GetAdminByIdUsecase } from "@domain/admin/usecases/get-admin-by-id";
 import { UpdateAdminUsecase } from "@domain/admin/usecases/update-admin";
 import { GetAllAdminsUsecase } from "@domain/admin/usecases/get-all-admins";
 import { LoginAdminUsecase } from "@domain/admin/usecases/login-admin";
+import { LogoutAdminUsecase } from "@domain/admin/usecases/logout-admin";
 
 import ApiError, { ErrorClass } from "@presentation/error-handling/api-error";
 import { Either } from "monet";
+import { log } from "console";
+import crypto from "crypto";
 
 export class AdminService {
   private readonly createAdminUsecase: CreateAdminUsecase;
@@ -22,7 +25,7 @@ export class AdminService {
   private readonly updateAdminUsecase: UpdateAdminUsecase;
   private readonly getAllAdminsUsecase: GetAllAdminsUsecase;
   private readonly loginAdminUsecase: LoginAdminUsecase;
-
+  private readonly logoutAdminUsecase: LogoutAdminUsecase;
 
   constructor(
     createAdminUsecase: CreateAdminUsecase,
@@ -30,7 +33,8 @@ export class AdminService {
     getAdminByIdUsecase: GetAdminByIdUsecase,
     updateAdminUsecase: UpdateAdminUsecase,
     getAllAdminsUsecase: GetAllAdminsUsecase,
-    loginAdminUsecase: LoginAdminUsecase
+    loginAdminUsecase: LoginAdminUsecase,
+    logoutAdminUsecase: LogoutAdminUsecase,
   ) {
     this.createAdminUsecase = createAdminUsecase;
     this.deleteAdminUsecase = deleteAdminUsecase;
@@ -38,14 +42,29 @@ export class AdminService {
     this.updateAdminUsecase = updateAdminUsecase;
     this.getAllAdminsUsecase = getAllAdminsUsecase;
     this.loginAdminUsecase = loginAdminUsecase;
+    this.logoutAdminUsecase = logoutAdminUsecase;
   }
 
   async createAdmin(req: Request, res: Response): Promise<void> {
-
     const adminData: AdminModel = AdminMapper.toModel(req.body);
-     const newAdmin: Either<ErrorClass, AdminEntity> =
+    const newAdmin: Either<ErrorClass, AdminEntity> =
       await this.createAdminUsecase.execute(adminData);
-       newAdmin.cata(
+    const generateRandomPassword = (length: number): string => {
+      const charset =
+        "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+      let password = "";
+
+      for (let i = 0; i < length; i++) {
+        const randomIndex = crypto.randomInt(0, charset.length);
+        password += charset.charAt(randomIndex);
+      }
+
+      return password;
+    };
+
+    const randomPassword = generateRandomPassword(8);
+    console.log(randomPassword);
+    newAdmin.cata(
       (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
       (result: AdminEntity) => {
@@ -148,33 +167,68 @@ export class AdminService {
   async loginAdmin(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
 
-    const adminResult: Either<ErrorClass, any> = await this.loginAdminUsecase.execute(email, password);
+    const adminResult: Either<ErrorClass, any> =
+      await this.loginAdminUsecase.execute(email, password);
 
     adminResult.cata(
-        (error: ErrorClass) => {
-            res.status(error.status).json({ error: error.message });
-        },
-        async (admin: any) => {
-            console.log(admin);
-        
-            const isMatch = await admin.matchPassword(password); // You should define the matchPassword method in AdminEntity
-            if (!isMatch) {
-                const err =  ApiError.forbidden();
-                return res.status(err.status).json(err.message);
-            }
+      (error: ErrorClass) => {
+        res.status(error.status).json({ error: error.message });
+      },
+      async (admin: any) => {
+        console.log(admin);
 
-            const token = await admin.generateToken();
-            console.log(token);
-
-            
-            const options = {
-                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                httpOnly: true,
-            };
-
-            const resData = { admin: AdminMapper.toEntity(admin, true) };
-            res.cookie("token" , token, options).json(resData);
+        const isMatch = await admin.matchPassword(password); // You should define the matchPassword method in AdminEntity
+        if (!isMatch) {
+          const err = ApiError.forbidden();
+          return res.status(err.status).json(err.message);
         }
+
+        const token = await admin.generateToken();
+        console.log(token);
+
+        const options = {
+          expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          httpOnly: true,
+        };
+
+        const resData = { admin: AdminMapper.toEntity(admin, true) };
+        res.cookie("token", token, options).json(resData);
+      }
     );
+  }
+
+    async logOut(req: Request, res: Response): Promise<void> {
+
+      const response: Either<ErrorClass, any> =
+        await this.logoutAdminUsecase.execute();
+        console.log(response);
+
+      (await response).cata(
+        (error: ErrorClass) =>
+          res.status(error.status).json({ error: error.message }),
+      
+        (result: void) => {
+          return res.json({ message: "Logged Out Successfully" });
+        }
+      );
+    }
 }
-}
+
+
+  //       exports.logOut = async (req, res) => {
+  //     try {
+
+  //         res.status(200)
+  //         .cookie("token", null, {expires: new Date(Date.now()), httpOnly: true})
+  //         .json({
+  //             success: true,
+  //             massage: "Logged Out",
+  //         })
+
+  //     } catch (error) {
+  //         res.status(500).json({
+  //             success: false,
+  //             massage: error.massage,
+  //         })
+  //     }
+  // }
