@@ -2,6 +2,7 @@
 
 export class EmployeeModel {
     constructor(
+        public employee_id:string = "",
         public full_name:string = "",
         public email:string = "",
         public password:string = "",
@@ -9,6 +10,7 @@ export class EmployeeModel {
         public address:string = "",
         public department:string = "",
         public designation:string = "",
+        public role:string = "",
         public joining_date:string = "",
         public profile_picture:string = "",
         public attendance_id:string = "",
@@ -32,6 +34,7 @@ export class LoginModel {
 export class EmployeeEntity{
     constructor(
         public id: string | undefined = undefined, // Set as a default value for id
+        public employee_id:string,
         public full_name:string ,
         public email:string ,
         public password:string ,
@@ -39,6 +42,7 @@ export class EmployeeEntity{
         public address:string ,
         public department:string ,
         public designation:string ,
+        public role:string ,
         public joining_date:string ,
         public profile_picture:string, 
         public attendance_id:string ,
@@ -64,6 +68,8 @@ export class EmployeeMapper {
         // If existingEmployee is provided, merge the data from employeeData with the existingEmployee
         return{
             ...existingEmployee,
+            employee_id:
+            employeeData.employee_id !==undefined ? employeeData.employee_id : existingEmployee.employee_id,
             full_name:
             employeeData.full_name !==undefined ? employeeData.full_name : existingEmployee.full_name,
             email:
@@ -78,6 +84,8 @@ export class EmployeeMapper {
             employeeData.department !==undefined ? employeeData.department : existingEmployee.department,
             designation:
             employeeData.designation !==undefined ? employeeData.designation : existingEmployee.designation,
+            role:
+            employeeData.role !==undefined ? employeeData.role : existingEmployee.role,
             joining_date:
             employeeData.joining_date !==undefined ? employeeData.joining_date : existingEmployee.joining_date,
             profile_picture:
@@ -94,12 +102,14 @@ export class EmployeeMapper {
              const employeeEntity: EmployeeEntity = {
                 id: includeId ? (employeeData._id ? employeeData._id.toString() : undefined) : undefined,
                 // id: includeId ? (tableData._id ? tableData._id.toString() : undefined) : undefined,
+                employee_id: employeeData.employee_id,
                 full_name: employeeData.full_name,
                 email: employeeData.email,
                 password: employeeData.password,
                 contact_number: employeeData.contact_number,
                 address: employeeData.address,
                 department: employeeData.department,
+                role: employeeData.role,
                 designation: employeeData.designation,
                 joining_date: employeeData.joining_date,
                 profile_picture: employeeData.profile_picture,
@@ -115,6 +125,7 @@ export class EmployeeMapper {
         static toModel(employee: EmployeeEntity): any {
             return {
                 id: employee.id,
+                employee_id:employee.employee_id,
                 full_name: employee.full_name,
                 email: employee.email,
                 password: employee.password,
@@ -122,6 +133,7 @@ export class EmployeeMapper {
                 address: employee.address,
                 department: employee.department,
                 designation: employee.designation,
+                role: employee.role,
                 joining_date: employee.joining_date,
                 profile_picture: employee.profile_picture,
                 attendance_id: employee.attendance_id,

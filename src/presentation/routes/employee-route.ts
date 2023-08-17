@@ -80,3 +80,4 @@ employeeRouter.get("/", employeeService.getAllEmployees.bind(employeeService));
 
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
+employeeRouter.post("/resetPass", employeeService.resetPassword.bind(employeeService));

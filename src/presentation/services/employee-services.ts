@@ -199,4 +199,31 @@ export class EmployeeService {
   //     }
   //   );
   // }
+
+  async resetPassword(req: Request, res: Response): Promise<void>{
+    const {email, password } = req.body;
+
+    console.log("password",email)
+    // =============================
+    // try {
+    //   const user = await userModel.findOne({ email });
+    //   if (user) {
+    //     bcrypt.compare(password, user.password, async (err, result) => {
+    //       if (result) {
+    //         let token = jwt.sign({ userID: user._id }, "sonu");
+    //         await userModel.findByIdAndUpdate({ _id: user._id });
+    //         res.send({ msg: "Login Successfull", token: token });
+    //       } else {
+    //         res.send({ msg: "Wrong Credentials" });
+    //       }
+    //     });
+    //   } else {
+    //     res.send({ msg: "User not found!" });
+    //   }
+    // } catch (err) {
+    //   res.send({ msg: "somthing went wrong! cannot login", error: err.message });
+    // }
+    // =============================
+
+  }
 }
