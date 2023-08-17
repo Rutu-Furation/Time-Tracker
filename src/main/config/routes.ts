@@ -4,6 +4,7 @@ import { adminRouter } from "@presentation/routes/admin-routes";
 import { type Express, Router } from "express";
 import ApiError from "@presentation/error-handling/api-error";
 import { employeeRouter } from "@presentation/routes/employee-route";
+import { attendanceRouter } from "@presentation/routes/attendance-route";
 
 
 export default (app: Express): void => {
@@ -17,5 +18,5 @@ export default (app: Express): void => {
 
   app.use("/employee",employeeRouter);
   app.use(router);
-
+ app.use("/attendance", attendanceRouter)
 };

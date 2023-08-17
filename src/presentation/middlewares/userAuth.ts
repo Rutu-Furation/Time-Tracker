@@ -1,15 +1,15 @@
 import { Request, Response, NextFunction } from "express";
 import jwt, { JsonWebTokenError } from "jsonwebtoken"; // Import JsonWebTokenError
-import { Admin } from "@data/admin/models/admin-model";
+import { Attendance } from "@data/attendance/models/attendance-models";
 
-export const isAuthenticated = async (
+export const isAuthenticatedUser = async (
   req: Request,
   res: Response,
   next: NextFunction
 ): Promise<void> => {
   try {
     const { token } = req.cookies;
-    console.log(token);
+    // console.log(token);
     
     if (!token) {
       res.status(401).json({
@@ -20,13 +20,18 @@ export const isAuthenticated = async (
         token,
         process.env.JWT_SECRET as string
       );
+      if(decoded){
+        req.body.User_id=decoded._id;
+        next();
+      }
+     
 
       // Cast error to JsonWebTokenError type
-      req.user = await Admin.findById(decoded._id);
-      next();
+    //   req.user = await Attendance.findById(decoded._id);
+    //   next();
 
-      // req.user = await Employee.findById(decoded._id);
-      // next();
+    //   req.user = await Employee.findById(decoded._id);
+    //   next();
 
     }
   } catch (error) {
