@@ -78,12 +78,19 @@ export class AttendanceService {
   async updateAttendance(req: Request, res: Response): Promise<void> {
     const currentTime = formatCurrentTime();
     const currentDate = getCurrentDate();
-    const user = await Attendance.find({ Date: currentDate });
+    const { User_id } = req.body;
 
-    const id = user[0]?._id;
+    // find the attendance details by User_id 
+    const user = await Attendance.find({ User_id });
 
-    const check_inTime = user[0]?.Check_in;
-    const { hours, minutes, seconds } = calculateTimeDifference(
+    // now find the current day check-in object
+    const currentDayDetails = user.find((x) => x.Date == currentDate);
+
+    // if current day check-in status is found then update that object with Duration, check-out time
+    if(currentDayDetails){
+      const id = currentDayDetails._id;
+      const check_inTime = currentDayDetails.Check_in;
+      const { hours, minutes, seconds } = calculateTimeDifference(
       check_inTime,
       currentTime
     );
@@ -100,6 +107,9 @@ export class AttendanceService {
         msg: "somthing went wrong! cannot checkout.",
         error: err.message,
       });
+    }
+    }else{
+      res.send("cannot find the check-in status of current day.")
     }
   }
 }

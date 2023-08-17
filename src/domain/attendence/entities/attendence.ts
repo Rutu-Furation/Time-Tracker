@@ -2,7 +2,7 @@ export class AttendanceModel {
   constructor(
     public Check_in: string = "",
     public Check_out: string = "",
-    public Date: Date | string = "",
+    public Date:  string = "",
     public Duration: string = "",
     public Status: boolean = false,
     public Remarks: string = "",
