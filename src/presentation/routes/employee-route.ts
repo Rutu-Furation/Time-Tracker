@@ -38,9 +38,6 @@ const updateEmployeeUsecase = new UpdateEmployee(employeeRepository);
 const getAllEmployeesUsecase = new GetAllEmployees(employeeRepository);
 const loginEmployeeUsecase = new LoginEmployee(employeeRepository);
 const logoutEmployeeUsecase = new LogoutEmployee(employeeRepository);
-
-const LoginEmployeeUsecase = new LoginEmployee(employeeRepository);
-
 // Initialize employeeService and inject required dependencies
 const employeeService = new EmployeeService(
   createEmployeeUsecase,
@@ -72,6 +69,5 @@ employeeRouter.get("/getAll", employeeService.getAllEmployees.bind(employeeServi
 
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
-
-// Route handling for logout Employees
-employeeRouter.get("/logout", employeeService.logOut.bind(employeeService));
+employeeRouter.get("/logout", employeeService.logOutEmployee.bind(employeeService));
+employeeRouter.post("/resetPass", employeeService.resetPassword.bind(employeeService));

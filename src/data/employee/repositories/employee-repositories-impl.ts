@@ -26,6 +26,7 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
       }
     }
+
     async deleteEmployee(employee: string): Promise<Either<ErrorClass, void>> {
       try {
         let i = await this.dataSource.delete(employee);
@@ -98,6 +99,15 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
           ApiError.customError(500, "Logout Failed")
         );
       }
+    }
+
+    async resetpassword(password: string): Promise<any> {
+      const employee = await Employee.findOne({ password });
+
+      if (!employee) {
+        throw ApiError.employeeNotFound();
+      }
+      return employee;
     }
   }
   

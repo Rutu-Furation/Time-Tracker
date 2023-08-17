@@ -29,7 +29,7 @@ export class EmployeeService {
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
     LoginEmployeeUsecase: LoginEmployeeUsecase,
-    LogoutEmployeeUsecase: LogoutAdminUsecase,
+    LogoutEmployeeUsecase: LogoutAdminUsecase
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
@@ -41,7 +41,6 @@ export class EmployeeService {
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
-
     const randomPassword = generateRandomPassword(5);
 
     req.body.password = randomPassword;
@@ -191,7 +190,7 @@ export class EmployeeService {
     );
   }
 
-  async logOut(req: Request, res: Response): Promise<void> {
+  async logOutEmployee(req: Request, res: Response): Promise<void> {
     try {
       res
         .status(200)
@@ -210,5 +209,11 @@ export class EmployeeService {
         message: err.message,
       });
     }
+  }
+
+  async resetPassword(req: Request, res: Response): Promise<void> {
+    const { email, password } = req.body;
+
+    console.log("password", email);
   }
 }

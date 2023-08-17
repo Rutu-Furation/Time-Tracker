@@ -8,27 +8,29 @@ interface CustomRequest extends Request {
   }
 
   const addressSchema = Joi.object({
-    streetName: Joi.string().required(),
-    landMark: Joi.string().required(),
-    city: Joi.string().required(),
-    pinCode: Joi.string().required(),
-    state: Joi.string().required(),
-    country: Joi.string().required(),
-  });
+    streetName: Joi.string(),
+  landMark: Joi.string(),
+  city: Joi.string(),
+  pinCode: Joi.string(),
+  state: Joi.string(),
+  country: Joi.string(),
+});
   
   const employeeValidationSchema = Joi.object({
+    employee_id: Joi.string().min(3).max(50).required(),
     full_name: Joi.string().min(3).max(50).required(),
-    email: Joi.string().min(5).max(50).required().email(),
+    email: Joi.string().email().min(5).max(50).required(),
     password: Joi.string().min(5).max(50).required(),
-    contact_number: Joi.number().max(9999999999999).required(),
+    contact_number: Joi.number().max(9999999999999),
     address: addressSchema,
     department: Joi.string().min(3).max(50).required(),
     designation: Joi.string().min(3).max(50).required(),
-    joining_date: Joi.date().required(),
-    profile_picture: Joi.string().allow('').optional(),
-    attendance_id: Joi.string().required(),
-    project_id: Joi.string().required(),
-    del_status: Joi.string().valid('Live', 'Deleted').default('Live'),
+    role: Joi.string().min(3).max(50).required(),
+    joining_date: Joi.date().iso().required(),
+    profile_picture: Joi.string(),
+    attendance_id: Joi.string(),
+    project_id: Joi.string(),
+    del_status: Joi.string().valid("Live", "Deleted").default("Live"),
   });
   
 function validateEmployeeMiddleware(req: CustomRequest, res: Response, next: NextFunction) {
