@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel} from "@domain/employee/entities/employee";
+import {
+  EmployeeModel,
+  EmployeeEntity,
+  EmployeeMapper,
+  LoginModel,
+} from "@domain/employee/entities/employee";
 import { CreateEmployeeUsecase } from "@domain/employee/usecases/create-employee";
 import { DeleteEmployeeUsecase } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-by-id";
@@ -9,6 +14,9 @@ import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
+import { ForgotPasswordUsecase } from "@domain/employee/usecases/forgot-Password";
+import { Attendance } from "@data/attendance/models/attendance-models";
+import { Employee } from "@data/client/models/client-models";
 
 export class EmployeeService {
   private readonly CreateEmployeeUsecase: CreateEmployeeUsecase;
@@ -17,23 +25,23 @@ export class EmployeeService {
   private readonly UpdateEmployeeUsecase: UpdateEmployeeUsecase;
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
   private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
-
+  private readonly ForgotPasswordUsecase: ForgotPasswordUsecase;
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
     DeleteEmployeeUsecase: DeleteEmployeeUsecase,
     GetEmployeeByIdUsecase: GetEmployeeByIdUsecase,
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
-    LoginEmployeeUsecase: LoginEmployeeUsecase
-    
+    LoginEmployeeUsecase: LoginEmployeeUsecase,
+    ForgotPasswordUsecase: ForgotPasswordUsecase
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
     this.GetEmployeeByIdUsecase = GetEmployeeByIdUsecase;
     this.UpdateEmployeeUsecase = UpdateEmployeeUsecase;
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
-
     this.LoginEmployeeUsecase = LoginEmployeeUsecase;
+    this.ForgotPasswordUsecase = ForgotPasswordUsecase;
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
@@ -63,9 +71,12 @@ export class EmployeeService {
     );
     // Call the UpdateEmployeeUsecase to delete the Employee
     const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
-      await this.UpdateEmployeeUsecase.execute(employeeId,updatedEmployeeEntity);
+      await this.UpdateEmployeeUsecase.execute(
+        employeeId,
+        updatedEmployeeEntity
+      );
 
-      updatedEmployee.cata(
+    updatedEmployee.cata(
       (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
       (result: EmployeeEntity) => {
@@ -96,38 +107,38 @@ export class EmployeeService {
     const employeeData: EmployeeModel = req.body;
 
     // Get the existing Employee by ID
-    const existingEmployee: Either<ErrorClass, EmployeeEntity | null > =
+    const existingEmployee: Either<ErrorClass, EmployeeEntity | null> =
       await this.GetEmployeeByIdUsecase.execute(employeeId);
-     
-      if (!existingEmployee) {
-        // If Employee is not found, send a not found message as a JSON response
-        ApiError.notFound();
-        return;
-      }
 
-      // Convert employeeData from EmployeeModel to EmployeeEntity using EmployeeMapper
-      const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
-        employeeData,
-        true,
-        // existingEmployee
-      );
+    if (!existingEmployee) {
+      // If Employee is not found, send a not found message as a JSON response
+      ApiError.notFound();
+      return;
+    }
 
-      // Call the UpdateEmployeeUsecase to update the employee
-      const updatedEmployee: Either<ErrorClass, EmployeeEntity> = await this.UpdateEmployeeUsecase.execute(
+    // Convert employeeData from EmployeeModel to EmployeeEntity using EmployeeMapper
+    const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
+      employeeData,
+      true
+      // existingEmployee
+    );
+
+    // Call the UpdateEmployeeUsecase to update the employee
+    const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
+      await this.UpdateEmployeeUsecase.execute(
         employeeId,
         updatedEmployeeEntity
       );
 
-      updatedEmployee.cata(
-        (error: ErrorClass) =>
+    updatedEmployee.cata(
+      (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
-        (result: EmployeeEntity) =>{
-          const responseData = EmployeeMapper.toModel(result);
-          return res.json(responseData)
-        }
-      )
+      (result: EmployeeEntity) => {
+        const responseData = EmployeeMapper.toModel(result);
+        return res.json(responseData);
+      }
+    );
   }
-   
 
   async getAllEmployees(req: Request, res: Response): Promise<void> {
     // Call the GetAllEmployeesUsecase to get all Employees
@@ -140,7 +151,7 @@ export class EmployeeService {
       (result: EmployeeEntity[]) => {
         // Convert Employees from an array of EmployeeEntity to an array of plain JSON objects using EmployeeMapper
         const responseData = result.map((employee) =>
-        EmployeeMapper.toModel(employee)
+          EmployeeMapper.toModel(employee)
         );
         return res.json(responseData);
       }
@@ -150,39 +161,38 @@ export class EmployeeService {
   async loginEmployee(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
 
-    const employeeResult: Either<ErrorClass, any> = await this.LoginEmployeeUsecase.execute(email, password);
+    const employeeResult: Either<ErrorClass, any> =
+      await this.LoginEmployeeUsecase.execute(email, password);
 
     employeeResult.cata(
-        (error: ErrorClass) => {
-            res.status(error.status).json({ error: error.message });
-        },
-        async (employee: any) => {
-        
-            const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
-            if (!isMatch) {
-                const err =  ApiError.forbidden();
-                return res.status(err.status).json(err.message);
-            }
-
-            const token = await employee.generateToken();
-            console.log(token);
-
-            
-            const options = {
-                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                httpOnly: true,
-            };
-
-            const resData = { employee: EmployeeMapper.toEntity(employee, true) };
-            res.cookie("token" , token, options).json(resData);
+      (error: ErrorClass) => {
+        res.status(error.status).json({ error: error.message });
+      },
+      async (employee: any) => {
+        const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
+        if (!isMatch) {
+          const err = ApiError.forbidden();
+          return res.status(err.status).json(err.message);
         }
+
+        const token = await employee.generateToken();
+        console.log(token);
+
+        const options = {
+          expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          httpOnly: true,
+        };
+
+        const resData = { employee: EmployeeMapper.toEntity(employee, true) };
+        res.cookie("token", token, options).json(resData);
+      }
     );
-}
+  }
 
   // async loginEmployee(req: Request, res: Response): Promise<void> {
 
   //   const {email, password} = req.body;
-    
+
   //   const employee: Either<ErrorClass, any> =
   //   await this.LoginEmployeeUsecase.execute(email, password);
 
@@ -191,7 +201,6 @@ export class EmployeeService {
   //       res.status(error.status).json({ error: error.message }),
   //     (result: EmployeeEntity) => {
 
-       
   //       // Generate and send JWT token
   //       // const token = this.generateJWTToken(result); // Implement this function
   //       const resData = { employee: EmployeeMapper.toEntity(result, true)};
@@ -199,4 +208,10 @@ export class EmployeeService {
   //     }
   //   );
   // }
+  async forgotPasswordForEmp(req: Request, res: Response): Promise<any> {
+    const { email } = req.body;
+    const employees = await this.ForgotPasswordUsecase.execute(email);
+    console.log("employees", employees);
+
+  }
 }

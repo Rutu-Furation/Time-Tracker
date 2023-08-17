@@ -10,4 +10,5 @@ export interface EmployeeRepository {
   getEmployees(): Promise<Either<ErrorClass, EmployeeEntity[]>>;
   getEmployeeById(id: string): Promise<Either<ErrorClass, EmployeeEntity | null>>;
   login(email:string, password:string): Promise<any>;
+  forgotPassword(email:string): Promise<any>;
 }

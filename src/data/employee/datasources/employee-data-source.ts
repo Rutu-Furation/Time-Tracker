@@ -10,7 +10,7 @@ export interface EmployeeDataSource {
   read(id: string): Promise<any | null>; // Return type should be Promise of EmployeeEntity or null
   getAllemployees(): Promise<any[]>; // Return type should be Promise of an array of EmployeeEntity
   login(email:string, password:string): Promise<any>;
-
+  forgotPass(email:string): Promise<any>;
 }
 
 export class EmployeeDataSourceImpl implements EmployeeDataSource {
@@ -69,5 +69,13 @@ export class EmployeeDataSourceImpl implements EmployeeDataSource {
   //   }
   //   return employee;
   // }
+
+  async forgotPass(email: string): Promise<any> {
+    const employee = await Employee.find({ email })
+    if (!employee) {
+      throw ApiError.adminNotFound();
+  }
+   return employee;
+  }
 
 }
