@@ -26,7 +26,6 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
       }
     }
-
     async deleteEmployee(employee: string): Promise<Either<ErrorClass, void>> {
       try {
         let i = await this.dataSource.delete(employee);

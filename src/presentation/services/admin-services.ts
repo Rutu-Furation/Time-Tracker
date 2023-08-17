@@ -208,7 +208,6 @@ export class AdminService {
       });
     }
   }
-  export = generateRandomPassword;
 }
 
 

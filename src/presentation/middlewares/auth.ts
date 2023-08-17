@@ -13,7 +13,7 @@ export const isAuthenticated = async (
 
     if (!token) {
       res.status(401).json({
-        message: "Please login first mansi",
+        message: "Please login first",
       });
     } else {
       const decoded: any = await jwt.verify(

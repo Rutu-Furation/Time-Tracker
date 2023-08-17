@@ -9,7 +9,6 @@ export const isAuthenticatedUser = async (
 ): Promise<void> => {
   try {
     const { token } = req.cookies;
-
     if (!token) {
       res.status(401).json({
         message: "Please login first",
@@ -24,12 +23,6 @@ export const isAuthenticatedUser = async (
         next();
       }
 
-      // Cast error to JsonWebTokenError type
-      //   req.user = await Attendance.findById(decoded._id);
-      //   next();
-
-      //   req.user = await Employee.findById(decoded._id);
-      //   next();
     }
   } catch (error) {
     const jwtError = error as JsonWebTokenError; // Cast error to JsonWebTokenError type

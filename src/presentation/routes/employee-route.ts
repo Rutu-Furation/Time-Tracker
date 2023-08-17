@@ -39,6 +39,8 @@ const getAllEmployeesUsecase = new GetAllEmployees(employeeRepository);
 const loginEmployeeUsecase = new LoginEmployee(employeeRepository);
 const logoutEmployeeUsecase = new LogoutEmployee(employeeRepository);
 
+const LoginEmployeeUsecase = new LoginEmployee(employeeRepository);
+
 // Initialize employeeService and inject required dependencies
 const employeeService = new EmployeeService(
   createEmployeeUsecase,
