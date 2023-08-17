@@ -85,5 +85,16 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
       }
       }
-      }
+
+      async resetpassword(password:string): Promise<any> {
+        try{
+          const res = await this.dataSource.resetpassword(password);
+        }catch(error) {
+          if (error instanceof ApiError && error.status === 404) {
+            return Left<ErrorClass, EmployeeEntity>(ApiError.notFound());
+          }
+          return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
+        }
+        }
+        }
   

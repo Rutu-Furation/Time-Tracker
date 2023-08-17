@@ -66,6 +66,7 @@ export interface EmployeeDataSource {
   read(id: string): Promise<any | null>; // Return type should be Promise of EmployeeEntity or null
   getAllemployees(): Promise<any[]>; // Return type should be Promise of an array of EmployeeEntity
   login(email:string, password:string): Promise<any>;
+  resetpassword(password:string): Promise<any>;
 
 }
 
@@ -111,19 +112,22 @@ export class EmployeeDataSourceImpl implements EmployeeDataSource {
     const employee = await Employee.findOne({ email }).select("+password");
     
     if (!employee) {
-        throw ApiError.adminNotFound();
+        throw ApiError.employeeNotFound();
     }
      return employee;
 }
-  // async login(email: string, password: string): Promise<any> {
-  //   // const existingEmployee = await Employee.findOne({ email: employee.email });
-  //   const employee = await Employee.findOne({ email }).select("+password");
-  //   console.log(employee, "line56");
-    
-  //   if (employee) {
-  //     throw ApiError.notFound();
-  //   }
-  //   return employee;
-  // }
+ 
 
+
+async resetpassword(password: string): Promise<any> {
+  const employee = await Employee.findOne({ password });
+
+  if (!employee) {
+    throw ApiError.employeeNotFound();
 }
+ return employee;
+}
+  
+}
+
+
