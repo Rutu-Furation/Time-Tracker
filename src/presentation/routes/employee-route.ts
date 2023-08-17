@@ -13,7 +13,7 @@ import { LoginEmployee } from "@domain/employee/usecases/login-employee";
 import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
 import { isAuthenticated } from "@presentation/middlewares/auth";
 
-
+import { InvitationApp } from "@data/employee/datasources/employee-data-source";
 
 
 // const dbURL =
@@ -22,9 +22,9 @@ import { isAuthenticated } from "@presentation/middlewares/auth";
 
 const mongooseconnection = mongoose.Connection;
 
-
+const invitationApp = new InvitationApp()
 // Create an instance of the EmployeeDataSourceImpl and pass the mongoose connection
-const employeeDataSource = new EmployeeDataSourceImpl(mongoose.connection);
+const employeeDataSource = new EmployeeDataSourceImpl(mongoose.connection,invitationApp);
 
 // Create an instance of the EmployeeRepositoryImpl and pass the EmployeeDataSourceImpl
 const employeeRepository = new EmployeeRepositoryImpl(employeeDataSource);
