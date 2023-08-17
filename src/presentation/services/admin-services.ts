@@ -34,7 +34,7 @@ export class AdminService {
     updateAdminUsecase: UpdateAdminUsecase,
     getAllAdminsUsecase: GetAllAdminsUsecase,
     loginAdminUsecase: LoginAdminUsecase,
-    logoutAdminUsecase: LogoutAdminUsecase,
+    logoutAdminUsecase: LogoutAdminUsecase
   ) {
     this.createAdminUsecase = createAdminUsecase;
     this.deleteAdminUsecase = deleteAdminUsecase;
@@ -197,38 +197,25 @@ export class AdminService {
     );
   }
 
-    async logOut(req: Request, res: Response): Promise<void> {
-
-      const response: Either<ErrorClass, any> =
-        await this.logoutAdminUsecase.execute();
-        console.log(response);
-
-      (await response).cata(
-        (error: ErrorClass) =>
-          res.status(error.status).json({ error: error.message }),
-      
-        (result: void) => {
-          return res.json({ message: "Logged Out Successfully" });
-        }
-      );
+  async logOut(req: Request, res: Response): Promise<void> {
+    try {
+      res
+        .status(200)
+        .cookie("token", null, {
+          expires: new Date(Date.now()),
+          httpOnly: true,
+        })
+        .json({
+          success: true,
+          message: "Logged Out",
+        });
+    } catch (error) {
+      const err = error as Error;
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
     }
+  }
 }
 
-
-  //       exports.logOut = async (req, res) => {
-  //     try {
-
-  //         res.status(200)
-  //         .cookie("token", null, {expires: new Date(Date.now()), httpOnly: true})
-  //         .json({
-  //             success: true,
-  //             massage: "Logged Out",
-  //         })
-
-  //     } catch (error) {
-  //         res.status(500).json({
-  //             success: false,
-  //             massage: error.massage,
-  //         })
-  //     }
-  // }

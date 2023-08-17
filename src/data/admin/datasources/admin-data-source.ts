@@ -15,7 +15,7 @@ export interface AdminDataSource {
   update(id: string, admin: AdminModel): Promise<any>; // Return type should be Promise of AdminEntity
   delete(id: string): Promise<void>;
   login(email: string, password: string): Promise<any>;
-  logout(): Promise<void>;
+  logout(): Promise<any>;
 }
 
 export class AdminDataSourceImpl implements AdminDataSource {
@@ -86,21 +86,3 @@ export class AdminDataSourceImpl implements AdminDataSource {
     throw new Error("Logout Failed");
   }
 }
-
-//     exports.logOut = async
-//  (req, res) => {
-//     try {
-
-//         res.status(200)
-//         .cookie("token", null, {expires: new Date(Date.now()), httpOnly: true})
-//         .json({
-//             success: true,
-//             massage: "Logged Out",
-//         })
-
-//     } catch (error) {
-//         res.status(500).json({
-//             success: false,
-//             massage: error.massage,
-//         })
-//     }
