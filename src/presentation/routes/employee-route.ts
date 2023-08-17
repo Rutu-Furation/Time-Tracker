@@ -14,7 +14,7 @@ import validateEmployeeMiddleware from "@presentation/middlewares/employee/valid
 import { isAuthenticated } from "@presentation/middlewares/auth";
 import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
 
-
+import { InvitationApp } from "@data/employee/datasources/employee-data-source";
 
 
 // const dbURL =
@@ -23,9 +23,9 @@ import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
 
 const mongooseconnection = mongoose.Connection;
 
-
+const invitationApp = new InvitationApp()
 // Create an instance of the EmployeeDataSourceImpl and pass the mongoose connection
-const employeeDataSource = new EmployeeDataSourceImpl(mongoose.connection);
+const employeeDataSource = new EmployeeDataSourceImpl(mongoose.connection,invitationApp);
 
 // Create an instance of the EmployeeRepositoryImpl and pass the EmployeeDataSourceImpl
 const employeeRepository = new EmployeeRepositoryImpl(employeeDataSource);
