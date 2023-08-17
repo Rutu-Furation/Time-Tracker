@@ -8,6 +8,66 @@ import {
   LoginModel,
 } from "@domain/admin/entities/admin"; // Import the entity and mapper
 
+import nodemailer from "nodemailer";
+import bodyParser from "body-parser";
+import express from "express";
+export class InvitationApp {
+  private app: express.Application;
+  private transporter: nodemailer.Transporter;
+  constructor() {
+    this.app = express();
+    this.app.use(bodyParser.json());
+    // Nodemailer configuration
+    this.transporter = nodemailer.createTransport({
+      service: "gmail",
+      // rutuja.dhekolkar@furation.tech  , mkfregktqnmykao
+      auth: {
+        user: "rutuja.dhekolkar@furation.tech",
+        pass: "svopfskoqniqnlwj",
+      },
+    });
+    // this.app.post('/send-invitation', this.sendInvitation.bind(this));
+  }
+  public sendInvitation(
+    email: string,
+    companyName: string,
+    full_name: string,
+    password: string
+  ): Promise<void> {
+    const mailOptions: nodemailer.SendMailOptions = {
+      from: "rutuja.dhekolkar@furation.tech",
+      to: email,
+      subject: "Invitation to Join Furation Tech Solutions WorkSpace",
+      headers: {
+        "Content-Type": "text/html",
+      },
+      // text: `You have been invited to join the group ${companyName}. Click the link to join: https://example.com/groups/${companyName}`
+      html: `
+  <p>Dear ${full_name},</p>
+  <p>We are thrilled to extend to you an invitation to join our esteemed community at Furation Tech Solutions. Your expertise and contributions are highly valued, and we believe your presence will further enrich our team.</p>
+  <p><strong>Invitation Details:</strong></p>
+  <p><strong>Company:</strong> Furation Tech Solutions<br>Invitation Link: <a href="https://time-tracker-frontend-eight.vercel.app/">Click Here</a></p>
+  <p>By clicking the link above, you will be directed to the platform where you can seamlessly join our organization and begin collaborating with like-minded professionals.</p>
+  <p><strong>Login Credentials:</strong> <br> <strong>Email :</strong> ${email} <br> <strong>Password:</strong>${password} </p>
+  <p>Should you have any questions or require assistance during the registration process, please don't hesitate to contact our support team at <a href="mailto:hello@furation.tech">hello@furation.tech</a>.</p>
+  <p>We eagerly await your participation and look forward to welcoming you aboard.</p>
+  <p><strong>Best regards,</strong><br>Furation Tech Solutions</p>
+`,
+    };
+    return new Promise((resolve, reject) => {
+      this.transporter.sendMail(mailOptions, (error, info) => {
+        if (error) {
+          console.error("Error sending invitation email:", error);
+          reject(error);
+        } else {
+          console.log("Invitation email sent:", info.response);
+          resolve();
+        }
+      });
+    });
+  }
+}
+
 export interface AdminDataSource {
   create(admin: AdminModel): Promise<any>;
   getById(id: string): Promise<AdminEntity>;
@@ -19,7 +79,10 @@ export interface AdminDataSource {
 }
 
 export class AdminDataSourceImpl implements AdminDataSource {
-  constructor(private db: mongoose.Connection) {}
+  constructor(
+    private db: mongoose.Connection,
+    private invitationApp: InvitationApp
+  ) {}
 
   async create(admin: AdminModel): Promise<any> {
     const existingAdmin = await Admin.findOne({ email: admin.email });
@@ -30,6 +93,14 @@ export class AdminDataSourceImpl implements AdminDataSource {
     const adminData = new Admin(admin);
 
     const createdAdmin = await adminData.save();
+
+        await this.invitationApp.sendInvitation(
+          admin.email,
+          "Furation Tech Solutions",
+          admin.fullName,
+          admin.password
+        );
+
 
     return createdAdmin.toObject();
   }
@@ -73,8 +144,6 @@ export class AdminDataSourceImpl implements AdminDataSource {
   async login(email: string, password: string): Promise<any> {
     // const existingAdmin = await Admin.findOne({ email: admin.email });
     const admin = await Admin.findOne({ email }).select("+password");
-    
-    
 
     if (!admin) {
       throw ApiError.adminNotFound();

@@ -13,12 +13,17 @@ import { LoginAdmin } from "@domain/admin/usecases/login-admin";
 import { LogoutAdmin } from "@domain/admin/usecases/logout-admin";
 import {validateAdminInputMiddleware } from "@presentation/middlewares/admin/validation-admin";
 import { isAuthenticated } from "@presentation/middlewares/auth";
+import { InvitationApp } from "@data/admin/datasources/admin-data-source";
+
 
 
 const mongooseConnection = mongoose.connection;
 
+const invitationApp = new InvitationApp();
+
+
 // Create an instance of the AdminDataSourceImpl and pass the mongoose connection
-const adminDataSource = new AdminDataSourceImpl(mongooseConnection);
+const adminDataSource = new AdminDataSourceImpl(mongooseConnection, invitationApp);
 // Create an instance of the AdminRepositoryImpl and pass the AdminDataSourceImpl
 const adminRepository = new AdminRepositoryImpl(adminDataSource);
 
