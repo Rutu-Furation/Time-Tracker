@@ -8,7 +8,7 @@ interface CustomRequest extends Request {
   }
 
   const addressSchema = Joi.object({
-    streetName: Joi.string(),
+  streetName: Joi.string(),
   landMark: Joi.string(),
   city: Joi.string(),
   pinCode: Joi.string(),
@@ -17,20 +17,20 @@ interface CustomRequest extends Request {
 });
   
   const employeeValidationSchema = Joi.object({
-    employee_id: Joi.string().min(3).max(50).required(),
-    full_name: Joi.string().min(3).max(50).required(),
+    employeeId: Joi.string().min(3).max(50).required(),
+    fullName: Joi.string().min(3).max(50).required(),
     email: Joi.string().email().min(5).max(50).required(),
     password: Joi.string().min(5).max(50).required(),
-    contact_number: Joi.number().max(9999999999999),
+    contactNumber: Joi.number().max(9999999999999),
     address: addressSchema,
     department: Joi.string().min(3).max(50).required(),
     designation: Joi.string().min(3).max(50).required(),
     role: Joi.string().min(3).max(50).required(),
-    joining_date: Joi.date().iso().required(),
-    profile_picture: Joi.string(),
-    attendance_id: Joi.string(),
-    project_id: Joi.string(),
-    del_status: Joi.string().valid("Live", "Deleted").default("Live"),
+    joiningDate: Joi.date().iso().required(),
+    profilePicture: Joi.string(),
+    attendanceId: Joi.string(),
+    projectId: Joi.string(),
+    delStatus: Joi.string().valid("Live", "Deleted").default("Live"),
   });
   
 function validateEmployeeMiddleware(req: CustomRequest, res: Response, next: NextFunction) {

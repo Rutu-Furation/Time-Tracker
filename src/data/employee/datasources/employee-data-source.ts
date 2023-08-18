@@ -24,7 +24,7 @@ export class InvitationApp {
     });
     // this.app.post('/send-invitation', this.sendInvitation.bind(this));
   }
-  public sendInvitation(email: string, companyName: string, full_name: string, password:string): Promise<void> {
+  public sendInvitation(email: string, companyName: string, fullName: string, password:string): Promise<void> {
     const mailOptions: nodemailer.SendMailOptions = {
       from: 'rutuja.dhekolkar@furation.tech',
       to: email,
@@ -34,7 +34,7 @@ export class InvitationApp {
       },
       // text: `You have been invited to join the group ${companyName}. Click the link to join: https://example.com/groups/${companyName}`
       html: `
-  <p>Dear ${full_name},</p>
+  <p>Dear ${fullName},</p>
   <p>We are thrilled to extend to you an invitation to join our esteemed community at Furation Tech Solutions. Your expertise and contributions are highly valued, and we believe your presence will further enrich our team.</p>
   <p><strong>Invitation Details:</strong></p>
   <p><strong>Company:</strong> Furation Tech Solutions<br>Invitation Link: <a href="https://time-tracker-frontend-eight.vercel.app/">Click Here</a></p>
@@ -87,7 +87,7 @@ export class EmployeeDataSourceImpl implements EmployeeDataSource {
     await this.invitationApp.sendInvitation(
       employee.email,
       "Furation Tech Solutions",
-      employee.full_name,
+      employee.fullName,
       employee.password
     );
 

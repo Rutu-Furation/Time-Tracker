@@ -2,7 +2,7 @@ import mongoose from "mongoose";
 
 const teamSchema = new mongoose.Schema({
   Team_name: { type: String, required: false },
-  Project_id: {
+  ProjectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Project",
     required: false,

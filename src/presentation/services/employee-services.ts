@@ -67,7 +67,7 @@ export class EmployeeService {
     const employeeId: string = req.params.employeeId;
 
     const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
-      { del_status: "Deleted" },
+      { delStatus: "Deleted" },
       true
     );
     // Call the UpdateEmployeeUsecase to delete the Employee

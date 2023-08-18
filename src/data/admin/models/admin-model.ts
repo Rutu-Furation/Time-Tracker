@@ -11,7 +11,7 @@ const validateEmail = function (email: string) {
 const adminSchema = new mongoose.Schema({
   fullName: {
     type: String,
-    required: false,
+    required: true,
     maxLength: [53, "Name should be under 53 Characters"],
     trim: true,
   },
@@ -27,7 +27,7 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please enter a password"],
-    minlength: [5, "Password must be at least 6 characters"],
+    minlength: [5, "Password must be at least 5 characters"],
     select: false,
   },
 
@@ -71,7 +71,7 @@ const adminSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  profile_picture: {
+  profilePicture: {
     type: String,
     required: false,
   },
