@@ -95,15 +95,29 @@ export class EmployeeRepositoryImpl implements EmployeeRepository {
     }
   }
 
-  async forgotPassword(email: string): Promise<any> {
-    try {
-      const res = await this.dataSource.forgotPass(email);
-      return res;
-    } catch (error) {
-      if (error instanceof ApiError && error.status === 404) {
-        return Left<ErrorClass, EmployeeEntity>(ApiError.notFound());
-      }
-      return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
-    }
-  }
+  // async forgotPassword(email: string): Promise<any> {
+  //   try {
+  //     const res = await this.dataSource.forgotPass(email);
+  //     return res;
+  //   } catch (error) {
+  //     if (error instanceof ApiError && error.status === 404) {
+  //       return Left<ErrorClass, EmployeeEntity>(ApiError.notFound());
+  //     }
+  //     return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
+  //   }
+  // }
+  // async resetpassword(password:string): Promise<any> {
+  //   try{
+  //     const res = await this.dataSource.resetpassword(password);
+  //   }catch(error) {
+  //     if (error instanceof ApiError && error.status === 404) {
+  //       return Left<ErrorClass, EmployeeEntity>(ApiError.notFound());
+  //     }
+  //     return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
+  //   }
+  //   }
 }
+
+      
+        
+  

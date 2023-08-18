@@ -14,7 +14,7 @@ import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
-import { ForgotPasswordUsecase } from "@domain/employee/usecases/forgot-Password";
+// import { ForgotPasswordUsecase } from "@domain/employee/usecases/forgot-Password";
 import { Attendance } from "@data/attendance/models/attendance-models";
 import { Employee } from "@data/client/models/client-models";
 
@@ -25,7 +25,7 @@ export class EmployeeService {
   private readonly UpdateEmployeeUsecase: UpdateEmployeeUsecase;
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
   private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
-  private readonly ForgotPasswordUsecase: ForgotPasswordUsecase;
+  // private readonly ForgotPasswordUsecase: ForgotPasswordUsecase;
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
     DeleteEmployeeUsecase: DeleteEmployeeUsecase,
@@ -33,7 +33,7 @@ export class EmployeeService {
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
     LoginEmployeeUsecase: LoginEmployeeUsecase,
-    ForgotPasswordUsecase: ForgotPasswordUsecase
+    // ForgotPasswordUsecase: ForgotPasswordUsecase
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
@@ -41,7 +41,7 @@ export class EmployeeService {
     this.UpdateEmployeeUsecase = UpdateEmployeeUsecase;
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
     this.LoginEmployeeUsecase = LoginEmployeeUsecase;
-    this.ForgotPasswordUsecase = ForgotPasswordUsecase;
+    // this.ForgotPasswordUsecase = ForgotPasswordUsecase;
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
@@ -208,10 +208,10 @@ export class EmployeeService {
   //     }
   //   );
   // }
-  async forgotPasswordForEmp(req: Request, res: Response): Promise<any> {
-    const { email } = req.body;
-    const employees = await this.ForgotPasswordUsecase.execute(email);
-    console.log("employees", employees);
+  // async forgotPasswordForEmp(req: Request, res: Response): Promise<any> {
+  //   const { email } = req.body;
+  //   const employees = await this.ForgotPasswordUsecase.execute(email);
+  //   console.log("employees", employees);
 
-  }
+  // }
 }

@@ -3,126 +3,133 @@ const bcrypt = require("bcrypt");
 const jwt = require("jsonwebtoken");
 const crypto = require("crypto");
 
-const validateEmail = function (email:string) {
+const validateEmail = function (email: string) {
   var re = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/;
   return re.test(email);
-}
-
+};
 
 const addressSchema = new mongoose.Schema({
   streetName: {
     type: String,
-    required: true,
+    //required: false,
   },
   landMark: {
     type: String,
-    required: true,
+    //required: true,
   },
   city: {
     type: String,
-    required: true,
+    //required: true,
   },
   pinCode: {
     type: String,
-    required: true,
+    //required: true,
   },
+
   state: {
     type: String,
-    required: true,
+    //required: true,
   },
   country: {
     type: String,
-    required: true,
+    //required: true,
   },
 });
 
-
-
 const employeeSchema = new mongoose.Schema({
+  employee_id: {
+    type: String,
+    maxlength: [50, "Maximum 50 characters are permitted"],
+    minLength: [3, "employee_id should have more than 3 characters"],
+    required: [true, "Please enter employee_id"],
+    trim: true,
+  },
+  full_name: {
+    type: String,
+    maxlength: [50, "Maximum 50 characters are permitted"],
+    minLength: [3, "full_name should have more than 3 characters"],
+    required: [true, "Please enter full_name"],
+    trim: true,
+  },
+  email: {
+    type: String,
+    maxlength: [50, "Maximum 50 characters are permitted"],
+    minLength: [5, "email should have more than 5 characters"],
+    required: [true, "Please enter email"],
+    unique: true,
+    trim: true,
+  },
+  password: {
+    type: String,
+    maxlength: [50, "Maximum 50 characters are permitted"],
+    minLength: [5, "password should have more than 5 characters"],
+    required: [true, "Please enter password"],
+    trim: true,
+  },
+  contact_number: {
+    type: Number,
+    required: false,
+    maxLength: [13, "Phone number should be under 13 Number"],
+  },
 
-    full_name: {
-        type: String,
-        maxlength: [50, "Maximum 50 characters are permitted"],
-        minLength: [3, "outlet_code should have more than 3 characters"],
-        required: [true, "Please enter full_name"],
-        trim: true,
-      },
-      email: {
-        type: String,
-        maxlength: [50, "Maximum 50 characters are permitted"],
-        minLength: [5, "email should have more than 5 characters"],
-        required: [true, "Please enter email"],
-        unique: true,
-        trim: true,
-      },
-      password: {
-        type: String,
-        maxlength: [50, "Maximum 50 characters are permitted"],
-        minLength: [5, "password should have more than 5 characters"],
-        required: [true, "Please enter password"],
-        trim: true,
-      },
-      contact_number: {
-        type: Number,
-        required: true,
-        maxLength: [13, "Phone number should be under 13 Number"],
+  address: addressSchema,
 
-      },
+  department: {
+    type: String,
+    maxlength: [50, "Maximum 50 charcters are permitted"],
+    minLength: [3, "department  should have more than 3 character"],
+    required: [true, "please enter department "],
+    trim: true,
+  },
+  designation: {
+    type: String,
+    maxlength: [50, "Maximum 50 charcters are permitted"],
+    minLength: [3, "designation  should have more than 3 character"],
+    required: [true, "please enter designation "],
+    trim: true,
+  },
+  role: {
+    type: String,
+    maxlength: [50, "Maximum 50 charcters are permitted"],
+    minLength: [3, "role  should have more than 3 character"],
+    required: [true, "please enter role "],
+    trim: true,
+  },
+  joining_date: {
+    type: Date,
+    required: [true, "please enter joining_date "],
+  },
+  profile_picture: {
+    type: String,
+    required: false,
+  },
+  attendance_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Attendance",
+    required: [false, "Please enter attendance"],
+  },
+  project_id: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "Project",
+    required: [false, "Please enter project_id"],
+  },
+  del_status: {
+    type: String,
+    enum: {
+      values: ["Live", "Deleted"],
+      message: "Value is not matched",
+    },
+    default: "Live",
+  },
+});
 
-
-      address: addressSchema,
-     
-      department: {
-        type: String,
-        maxlength: [50, "Maximum 50 charcters are permitted"],
-        minLength: [3, "department  should have more than 3 character"],
-        required: [true, "please enter department "],
-        trim: true,
-      },
-      designation: {
-        type: String,
-        maxlength: [50, "Maximum 50 charcters are permitted"],
-        minLength: [3, "designation  should have more than 3 character"],
-        required: [true, "please enter designation "],
-        trim: true,
-      },
-      joining_date: {
-        type: Date, 
-        required: [true, "please enter joining_date "],
-       },
-      profile_picture: {
-        type: String,
-        required: false,
-      },
-      attendance_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Attendance",
-        required: [true, "Please enter attendance"],
-      },
-      project_id: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Project",
-        required: [true, "Please enter project_id"],
-      },
-      del_status: {
-        type: String,
-        enum: {
-          values: ["Live", "Deleted"],
-          message: "Value is not matched",
-        },
-        default: "Live",
-      },
-      
-    }
-);
-
-employeeSchema.pre("save",async function(next){
-  if(this.isModified("password")) {
+employeeSchema.pre("save", async function (next) {
+  if (this.isModified("password")) {
     this.password = await bcrypt.hash(this.password, 10);
   }
   next();
 });
-employeeSchema.methods.matchPassword = async function (password:string) {
+employeeSchema.methods.matchPassword = async function (password: string) {
   return await bcrypt.compare(password, this.password);
 };
 

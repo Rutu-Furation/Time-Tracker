@@ -12,7 +12,7 @@ import { UpdateEmployee } from "@domain/employee/usecases/update-Employee";
 import { LoginEmployee } from "@domain/employee/usecases/login-employee";
 import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
 import { isAuthenticated } from "@presentation/middlewares/auth";
-import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
+// import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
 
 import { InvitationApp } from "@data/employee/datasources/employee-data-source";
 
@@ -37,7 +37,7 @@ const getEmployeeByIdUsecase = new GetEmployeeById(employeeRepository);
 const updateEmployeeUsecase = new UpdateEmployee(employeeRepository);
 const getAllEmployeesUsecase = new GetAllEmployees(employeeRepository);
 const LoginEmployeeUsecase = new LoginEmployee(employeeRepository);
-const forgotPasswordUsecase = new ForgotPassword(employeeRepository)
+// const forgotPasswordUsecase = new ForgotPassword(employeeRepository)
 // Initialize employeeService and inject required dependencies
 const employeeService = new EmployeeService(
   createEmployeeUsecase,
@@ -46,7 +46,7 @@ const employeeService = new EmployeeService(
   updateEmployeeUsecase,
   getAllEmployeesUsecase,
   LoginEmployeeUsecase,
-  forgotPasswordUsecase
+  // forgotPasswordUsecase
 );
 
 // Create an Express router
@@ -70,4 +70,5 @@ employeeRouter.get("/", employeeService.getAllEmployees.bind(employeeService));
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
 
-employeeRouter.post("/forgotPassword", employeeService.forgotPasswordForEmp.bind(employeeService));
+// employeeRouter.post("/forgotPassword", employeeService.forgotPasswordForEmp.bind(employeeService));
+// employeeRouter.post("/resetPass", employeeService.resetPassword.bind(employeeService));
