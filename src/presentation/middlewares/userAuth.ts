@@ -21,7 +21,7 @@ export const isAuthenticatedUser = async (
         process.env.JWT_SECRET as string
       );
       if(decoded){
-        req.body.User_id=decoded._id;
+        req.body.userId=decoded._id;
         next();
       }
      

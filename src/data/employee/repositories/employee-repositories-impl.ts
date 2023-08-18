@@ -98,7 +98,7 @@ export class EmployeeRepositoryImpl implements EmployeeRepository {
   async forgotPassword(email: string): Promise<any> {
     try {
       const res = await this.dataSource.forgotPass(email);
-      return res
+      return res;
     } catch (error) {
       if (error instanceof ApiError && error.status === 404) {
         return Left<ErrorClass, EmployeeEntity>(ApiError.notFound());
