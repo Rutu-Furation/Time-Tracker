@@ -6,6 +6,8 @@
 globalConfig.json
 yarn-error.log
 package-lock.json
+.gitignore
+
 
 # Logs
 logs
