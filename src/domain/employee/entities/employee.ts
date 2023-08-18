@@ -15,8 +15,7 @@ export class EmployeeModel {
         public profilePicture:string = "",
         public attendanceId:string = "",
         public projectId:string = "",
-        public delStatus:string = ""
-
+        public delStatus:string = "",
 
 
     ) {}

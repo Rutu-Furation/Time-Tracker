@@ -100,5 +100,20 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         );
       }
     }
+
+    async resetPassword(email: any): Promise<any> {
+      try {
+        const resetPass = await this.dataSource.resetPassword(email)
+  
+        return Right<ErrorClass, any>(resetPass);
+      } catch (error) {
+        if (error instanceof ApiError) {
+          return Left<ErrorClass, string>(error);
+        }
+        return Left<ErrorClass, string>(
+          ApiError.customError(500, "no matched result with provied email")
+        );
+      }
+    }
   }
   

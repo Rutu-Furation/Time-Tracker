@@ -121,6 +121,8 @@ const employeeSchema = new mongoose.Schema({
     },
     default: "Live",
   },
+  resetPasswordToken:String,
+  resetPasswordExpire:Date
 });
 
 employeeSchema.pre("save", async function (next) {
@@ -136,5 +138,19 @@ employeeSchema.methods.matchPassword = async function (password: string) {
 employeeSchema.methods.generateToken = function () {
   return jwt.sign({ _id: this._id }, process.env.JWT_SECRET);
 };
+
+// generate the token for reset password
+employeeSchema.methods.getResetPasswordToken = function () {
+  const resetToken =  crypto.randomBytes(20).toString('hex');
+  this.resetPasswordToken = crypto.createHash('sha256').update(resetToken).digest('hex');
+  this.resetPasswordExpire = Date.now() + 10 * 60 * 1000;
+  return resetToken
+}
+
+
+
+
+
+
 
 export const Employee = mongoose.model("Employee", employeeSchema);

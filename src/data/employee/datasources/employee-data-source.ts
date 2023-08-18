@@ -67,6 +67,7 @@ export interface EmployeeDataSource {
   getAllemployees(): Promise<any[]>; // Return type should be Promise of an array of EmployeeEntity
   login(email: string, password: string): Promise<any>;
   logout(): Promise<any>;
+  resetPassword(email: any):Promise<any>;
 }
 
 export class EmployeeDataSourceImpl implements EmployeeDataSource {
@@ -126,6 +127,15 @@ export class EmployeeDataSourceImpl implements EmployeeDataSource {
 
   logout(): Promise<void> {
     throw new Error("Logout Failed");
+  }
+
+  async resetPassword(email: any): Promise<any> {
+    const matchedEmailObject = await Employee.findOne({email:email.email})
+
+    if (!matchedEmailObject) {
+      throw ApiError.employeeNotFound();
+    }
+    return matchedEmailObject;
   }
 }
 

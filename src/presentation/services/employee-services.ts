@@ -11,12 +11,15 @@ import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-b
 import { UpdateEmployeeUsecase } from "@domain/employee/usecases/update-Employee";
 import { GetAllEmployeesUsecase } from "@domain/employee/usecases/get-all-employee";
 import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
+import { ResetPasswordUsecase } from "@domain/employee/usecases/reset-password";
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
 import { LogoutAdminUsecase } from "@domain/admin/usecases/logout-admin";
 import crypto from "crypto";
 import { generateRandomPassword } from "@presentation/middlewares/randomPassword";
+import { InvitationApp } from "@data/admin/datasources/admin-data-source";
+import { sendEmail } from "@presentation/middlewares/employee/send-email";
 
 export class EmployeeService {
   private readonly CreateEmployeeUsecase: CreateEmployeeUsecase;
@@ -26,6 +29,7 @@ export class EmployeeService {
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
   private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
   private readonly LogoutEmployeeUsecase: LogoutAdminUsecase;
+  private readonly ResetPasswordUsecase: ResetPasswordUsecase;
 
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
@@ -34,7 +38,8 @@ export class EmployeeService {
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
     LoginEmployeeUsecase: LoginEmployeeUsecase,
-    LogoutEmployeeUsecase: LogoutAdminUsecase
+    LogoutEmployeeUsecase: LogoutAdminUsecase,
+    ResetPasswordUsecase: ResetPasswordUsecase
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
@@ -43,6 +48,7 @@ export class EmployeeService {
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
     this.LoginEmployeeUsecase = LoginEmployeeUsecase;
     this.LogoutEmployeeUsecase = LogoutEmployeeUsecase;
+    this.ResetPasswordUsecase = ResetPasswordUsecase;
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
@@ -175,6 +181,8 @@ export class EmployeeService {
         const responseData = result.map((employee) =>
           EmployeeMapper.toModel(employee)
         );
+        if (responseData) {
+        }
         return res.json(responseData);
       }
     );
@@ -231,5 +239,51 @@ export class EmployeeService {
         message: err.message,
       });
     }
+  }
+
+  async resetPassord(req: Request, res: Response): Promise<void> {
+    const employees: any = await this.ResetPasswordUsecase.execute(req.body);
+    // console.log(employees.value);
+
+    // res.send(employees.value)
+
+    employees.cata(
+      (error: ErrorClass) =>
+        res.status(error.status).json({ error: error.message }),
+      async (result: any) => {
+        const resetPassordToken = result.getResetPasswordToken();
+        // ==========
+        const randomOtp = 12345;
+        const resetUrl = `${req.protocol}://${req.get(
+          "host"
+        )}/api/v1/password/reset/${resetPassordToken}`;
+        // const message = `Reset Your Password by clicking on the link below: \n\n ${resetUrl}
+        //   Your Otp for reset password is ${randomOtp}`;
+        const message = `Your Otp for reset password is ${randomOtp}`;
+        try {
+          await sendEmail({
+            email: result.email,
+            message,
+          });
+          res.status(200).json({
+            success: true,
+            message: `Email sent to ${result.email}`,
+          });
+        } catch (error: any) {
+          result.resetPasswordToken = undefined;
+          result.resetPasswordExpire = undefined;
+          await result.save();
+          res.status(500).json({
+            success: false,
+            massage: error.massage,
+          });
+        }
+
+        // ===========
+        return res.json({
+          result: result,
+        });
+      }
+    );
   }
 }

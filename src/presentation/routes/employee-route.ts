@@ -16,6 +16,7 @@ import { isAuthenticated } from "@presentation/middlewares/auth";
 // import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
 
 import { InvitationApp } from "@data/employee/datasources/employee-data-source";
+import { ResetPassword } from "@domain/employee/usecases/reset-password";
 
 
 // const dbURL =
@@ -39,6 +40,7 @@ const updateEmployeeUsecase = new UpdateEmployee(employeeRepository);
 const getAllEmployeesUsecase = new GetAllEmployees(employeeRepository);
 const loginEmployeeUsecase = new LoginEmployee(employeeRepository);
 const logoutEmployeeUsecase = new LogoutEmployee(employeeRepository);
+const ResetPasswordUsecase = new ResetPassword(employeeRepository);
 // Initialize employeeService and inject required dependencies
 const employeeService = new EmployeeService(
   createEmployeeUsecase,
@@ -48,6 +50,7 @@ const employeeService = new EmployeeService(
   getAllEmployeesUsecase,
   loginEmployeeUsecase,
   logoutEmployeeUsecase,
+  ResetPasswordUsecase
 );
 
 // Create an Express router
@@ -71,3 +74,4 @@ employeeRouter.get("/getAll", employeeService.getAllEmployees.bind(employeeServi
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
 employeeRouter.get("/logout", employeeService.logOutEmployee.bind(employeeService));
+employeeRouter.get("/", employeeService.resetPassord.bind(employeeService));
