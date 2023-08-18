@@ -100,14 +100,5 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         );
       }
     }
-
-    async resetpassword(password: string): Promise<any> {
-      const employee = await Employee.findOne({ password });
-
-      if (!employee) {
-        throw ApiError.employeeNotFound();
-      }
-      return employee;
-    }
   }
   

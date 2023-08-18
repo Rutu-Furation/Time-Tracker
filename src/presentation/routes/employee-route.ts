@@ -13,6 +13,7 @@ import { LoginEmployee } from "@domain/employee/usecases/login-employee";
 import { LogoutEmployee } from "@domain/employee/usecases/logout-employee";
 import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
 import { isAuthenticated } from "@presentation/middlewares/auth";
+// import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
 
 import { InvitationApp } from "@data/employee/datasources/employee-data-source";
 
@@ -53,7 +54,7 @@ const employeeService = new EmployeeService(
 export const employeeRouter = Router();
 
 // Route handling for creating a new Employee
-employeeRouter.post("/create", validateEmployeeMiddleware,employeeService.createEmployee.bind(employeeService));
+employeeRouter.post("/create", validateEmployeeMiddleware,isAuthenticated, employeeService.createEmployee.bind(employeeService));
 
 // Route handling for getting an Employee by ID
 employeeRouter.get("/getByID/:employeeId", employeeService.getEmployeeById.bind(employeeService));
@@ -70,4 +71,3 @@ employeeRouter.get("/getAll", employeeService.getAllEmployees.bind(employeeServi
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
 employeeRouter.get("/logout", employeeService.logOutEmployee.bind(employeeService));
-employeeRouter.post("/resetPass", employeeService.resetPassword.bind(employeeService));

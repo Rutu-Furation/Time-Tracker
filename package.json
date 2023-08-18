@@ -23,6 +23,7 @@
     "@types/cors": "^2.8.13",
     "@types/jest": "^29.5.3",
     "@types/node": "^20.4.4",
+    "@types/nodemailer": "^6.4.9",
     "@types/supertest": "^2.0.12",
     "concurrently": "^8.2.0",
     "eslint-config-standard-with-typescript": "^37.0.0",

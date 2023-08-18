@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel} from "@domain/employee/entities/employee";
+import {
+  EmployeeModel,
+  EmployeeEntity,
+  EmployeeMapper,
+  LoginModel,
+} from "@domain/employee/entities/employee";
 import { CreateEmployeeUsecase } from "@domain/employee/usecases/create-employee";
 import { DeleteEmployeeUsecase } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-by-id";
@@ -66,26 +71,42 @@ export class EmployeeService {
   async deleteEmployee(req: Request, res: Response): Promise<void> {
     const employeeId: string = req.params.employeeId;
 
-    const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
-      { delStatus: "Deleted" },
-      true
-    );
-    // Call the UpdateEmployeeUsecase to delete the Employee
-    const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
-      await this.UpdateEmployeeUsecase.execute(
-        employeeId,
-        updatedEmployeeEntity
-      );
+    // Call the DeleteEmployeeUsecase to delete the admin
+    const response: Either<ErrorClass, void> =
+      await this.DeleteEmployeeUsecase.execute(employeeId);
 
-    updatedEmployee.cata(
+    (await response).cata(
       (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
-      (result: EmployeeEntity) => {
-        const responseData = EmployeeMapper.toModel(result);
-        return res.json(responseData);
+      (result: void) => {
+        return res.json({ message: "Employee deleted successfully." });
       }
     );
   }
+
+  // async deleteEmployee(req: Request, res: Response): Promise<void> {
+  //   const employeeId: string = req.params.employeeId;
+
+  //   const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
+  //     { delStatus: "Deleted" },
+  //     true
+  //   );
+  //   // Call the UpdateEmployeeUsecase to delete the Employee
+  //   const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
+  //     await this.UpdateEmployeeUsecase.execute(
+  //       employeeId,
+  //       updatedEmployeeEntity
+  //     );
+
+  //   updatedEmployee.cata(
+  //     (error: ErrorClass) =>
+  //       res.status(error.status).json({ error: error.message }),
+  //     (result: EmployeeEntity) => {
+  //       const responseData = EmployeeMapper.toModel(result);
+  //       return res.json(responseData);
+  //     }
+  //   );
+  // }
 
   async getEmployeeById(req: Request, res: Response): Promise<void> {
     const employeeId: string = req.params.employeeId;
@@ -173,6 +194,7 @@ export class EmployeeService {
         const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
         if (!isMatch) {
           const err = ApiError.forbidden();
+          console.log(err);
           return res.status(err.status).json(err.message);
         }
 
@@ -209,11 +231,5 @@ export class EmployeeService {
         message: err.message,
       });
     }
-  }
-
-  async resetPassword(req: Request, res: Response): Promise<void> {
-    const { email, password } = req.body;
-
-    console.log("password", email);
   }
 }
