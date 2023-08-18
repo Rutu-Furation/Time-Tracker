@@ -2,20 +2,20 @@
 
 export class EmployeeModel {
     constructor(
-        public employee_id:string = "",
-        public full_name:string = "",
+        public employeeId:string = "",
+        public fullName:string = "",
         public email:string = "",
         public password:string = "",
-        public contact_number:string = "",
+        public contactNumber:string = "",
         public address:string = "",
         public department:string = "",
         public designation:string = "",
         public role:string = "",
-        public joining_date:string = "",
-        public profile_picture:string = "",
-        public attendance_id:string = "",
-        public project_id:string = "",
-        public del_status:string = ""
+        public joiningDate:string = "",
+        public profilePicture:string = "",
+        public attendanceId:string = "",
+        public projectId:string = "",
+        public delStatus:string = ""
 
 
 
@@ -34,20 +34,20 @@ export class LoginModel {
 export class EmployeeEntity{
     constructor(
         public id: string | undefined = undefined, // Set as a default value for id
-        public employee_id:string,
-        public full_name:string ,
+        public employeeId:string,
+        public fullName:string ,
         public email:string ,
         public password:string ,
-        public contact_number:string ,
+        public contactNumber:string ,
         public address:string ,
         public department:string ,
         public designation:string ,
         public role:string ,
-        public joining_date:string ,
-        public profile_picture:string, 
-        public attendance_id:string ,
-        public project_id:string ,
-        public del_status:string
+        public joiningDate:string ,
+        public profilePicture:string, 
+        public attendanceId:string ,
+        public projectId:string ,
+        public delStatus:string
     ) {}
 }
 
@@ -68,16 +68,16 @@ export class EmployeeMapper {
         // If existingEmployee is provided, merge the data from employeeData with the existingEmployee
         return{
             ...existingEmployee,
-            employee_id:
-            employeeData.employee_id !==undefined ? employeeData.employee_id : existingEmployee.employee_id,
-            full_name:
-            employeeData.full_name !==undefined ? employeeData.full_name : existingEmployee.full_name,
+            employeeId:
+            employeeData.employeeId !==undefined ? employeeData.employeeId : existingEmployee.employeeId,
+            fullName:
+            employeeData.fullName !==undefined ? employeeData.fullName : existingEmployee.fullName,
             email:
             employeeData.email !==undefined ? employeeData.email : existingEmployee.email,
             password:
             employeeData.password !==undefined ? employeeData.password : existingEmployee.password,
-            contact_number:
-            employeeData.contact_number !==undefined ? employeeData.contact_number : existingEmployee.contact_number,
+            contactNumber:
+            employeeData.contactNumber !==undefined ? employeeData.contactNumber : existingEmployee.contactNumber,
             address:
             employeeData.address !==undefined ? employeeData.address : existingEmployee.address,
             department:
@@ -86,36 +86,36 @@ export class EmployeeMapper {
             employeeData.designation !==undefined ? employeeData.designation : existingEmployee.designation,
             role:
             employeeData.role !==undefined ? employeeData.role : existingEmployee.role,
-            joining_date:
-            employeeData.joining_date !==undefined ? employeeData.joining_date : existingEmployee.joining_date,
-            profile_picture:
-            employeeData.profile_picture !==undefined ? employeeData.profile_picture : existingEmployee.profile_picture,
-            attendance_id:
-            employeeData.attendance_id !==undefined ? employeeData.attendance_id : existingEmployee.attendance_id,
-             project_id:
-            employeeData.project_id !==undefined ? employeeData.project_id : existingEmployee.project_id,
-            del_status:
-            employeeData.del_status !==undefined ? employeeData.del_status : existingEmployee.del_status,
+            joiningDate:
+            employeeData.joiningDate !==undefined ? employeeData.joiningDate : existingEmployee.joiningDate,
+            profilePicture:
+            employeeData.profilePicture !==undefined ? employeeData.profilePicture : existingEmployee.profilePicture,
+            attendanceId:
+            employeeData.attendanceId !==undefined ? employeeData.attendanceId : existingEmployee.attendanceId,
+             projectId:
+            employeeData.projectId !==undefined ? employeeData.projectId : existingEmployee.projectId,
+            delStatus:
+            employeeData.delStatus !==undefined ? employeeData.delStatus : existingEmployee.delStatus,
         };
         }else {
              // If existingEmployee is not provided, create a new EmployeeEntity using employeeData
              const employeeEntity: EmployeeEntity = {
                 id: includeId ? (employeeData._id ? employeeData._id.toString() : undefined) : undefined,
                 // id: includeId ? (tableData._id ? tableData._id.toString() : undefined) : undefined,
-                employee_id: employeeData.employee_id,
-                full_name: employeeData.full_name,
+                employeeId: employeeData.employeeId,
+                fullName: employeeData.fullName,
                 email: employeeData.email,
                 password: employeeData.password,
-                contact_number: employeeData.contact_number,
+                contactNumber: employeeData.contactNumber,
                 address: employeeData.address,
                 department: employeeData.department,
                 role: employeeData.role,
                 designation: employeeData.designation,
-                joining_date: employeeData.joining_date,
-                profile_picture: employeeData.profile_picture,
-                attendance_id: employeeData.attendance_id,
-                project_id: employeeData.project_id,
-                del_status: employeeData.del_status,
+                joiningDate: employeeData.joiningDate,
+                profilePicture: employeeData.profilePicture,
+                attendanceId: employeeData.attendanceId,
+                projectId: employeeData.projectId,
+                delStatus: employeeData.delStatus,
 
              };
              return employeeEntity;
@@ -125,20 +125,20 @@ export class EmployeeMapper {
         static toModel(employee: EmployeeEntity): any {
             return {
                 id: employee.id,
-                employee_id:employee.employee_id,
-                full_name: employee.full_name,
+                employeeId:employee.employeeId,
+                fullName: employee.fullName,
                 email: employee.email,
                 password: employee.password,
-                contact_number: employee.contact_number,
+                contactNumber: employee.contactNumber,
                 address: employee.address,
                 department: employee.department,
                 designation: employee.designation,
                 role: employee.role,
-                joining_date: employee.joining_date,
-                profile_picture: employee.profile_picture,
-                attendance_id: employee.attendance_id,
-                project_id: employee.project_id,
-                del_status: employee.del_status,
+                joiningDate: employee.joiningDate,
+                profilePicture: employee.profilePicture,
+                attendanceId: employee.attendanceId,
+                projectId: employee.projectId,
+                delStatus: employee.delStatus,
             };
         }
     }

@@ -37,18 +37,18 @@ const addressSchema = new mongoose.Schema({
 });
 
 const employeeSchema = new mongoose.Schema({
-  employee_id: {
+  employeeId: {
     type: String,
     maxlength: [50, "Maximum 50 characters are permitted"],
-    minLength: [3, "employee_id should have more than 3 characters"],
-    required: [true, "Please enter employee_id"],
+    minLength: [3, "employeeId should have more than 3 characters"],
+    required: [true, "Please enter employeeId"],
     trim: true,
   },
-  full_name: {
+  fullName: {
     type: String,
     maxlength: [50, "Maximum 50 characters are permitted"],
-    minLength: [3, "full_name should have more than 3 characters"],
-    required: [true, "Please enter full_name"],
+    minLength: [3, "fullName should have more than 3 characters"],
+    required: [true, "Please enter fullName"],
     trim: true,
   },
   email: {
@@ -66,7 +66,7 @@ const employeeSchema = new mongoose.Schema({
     required: [true, "Please enter password"],
     trim: true,
   },
-  contact_number: {
+  contactNumber: {
     type: Number,
     required: false,
     maxLength: [13, "Phone number should be under 13 Number"],
@@ -95,25 +95,25 @@ const employeeSchema = new mongoose.Schema({
     required: [true, "please enter role "],
     trim: true,
   },
-  joining_date: {
+  joiningDate: {
     type: Date,
-    required: [true, "please enter joining_date "],
+    required: [true, "please enter joiningDate "],
   },
-  profile_picture: {
+  profilePicture: {
     type: String,
     required: false,
   },
-  attendance_id: {
+  attendanceId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Attendance",
     required: [false, "Please enter attendance"],
   },
-  project_id: {
+  projectId: {
     type: mongoose.Schema.Types.ObjectId,
     ref: "Project",
-    required: [false, "Please enter project_id"],
+    required: [false, "Please enter projectId"],
   },
-  del_status: {
+  delStatus: {
     type: String,
     enum: {
       values: ["Live", "Deleted"],

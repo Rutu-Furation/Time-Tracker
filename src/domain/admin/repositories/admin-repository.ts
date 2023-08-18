@@ -10,5 +10,6 @@ export interface AdminRepository {
   ): Promise<Either<ErrorClass, AdminEntity>>;
   getAdmins(): Promise<Either<ErrorClass, AdminEntity[]>>;
   getAdminById(id: string): Promise<Either<ErrorClass, AdminEntity>>;
-  login(email:string, password:string): Promise<any>;
+  login(email: string, password: string): Promise<any>;
+  logout(): Promise<any>;
 }

@@ -56,8 +56,8 @@ export class AttendanceService {
       
       const currentDate = getCurrentDate();
       const currentTime = formatCurrentTime();
-      const payload = { ...req.body, Date: currentDate, Check_in: currentTime };
-      console.log(payload)
+      const payload = { ...req.body, date: currentDate, checkIn: currentTime };
+      // console.log(payload)
       const adminData: AttendanceModel = AttendanceMapper.toModel(payload);
 
       const newAdmin: AttendanceEntity =
@@ -78,18 +78,18 @@ export class AttendanceService {
   async updateAttendance(req: Request, res: Response): Promise<void> {
     const currentTime = formatCurrentTime();
     const currentDate = getCurrentDate();
-    const { User_id } = req.body;
-
+    const { userId } = req.body;
     // find the attendance details by User_id 
-    const user = await Attendance.find({ User_id });
+    const user = await Attendance.find({ userId });
 
     // now find the current day check-in object
-    const currentDayDetails = user.find((x) => x.Date == currentDate);
+    const currentDayDetails = user.find((x) => x.date == currentDate);
 
     // if current day check-in status is found then update that object with Duration, check-out time
     if(currentDayDetails){
       const id = currentDayDetails._id;
-      const check_inTime = currentDayDetails.Check_in;
+      const check_inTime = currentDayDetails.checkIn;
+      console.log(check_inTime)
       const { hours, minutes, seconds } = calculateTimeDifference(
       check_inTime,
       currentTime
@@ -98,8 +98,8 @@ export class AttendanceService {
 
     try {
       await Attendance.findByIdAndUpdate(id, {
-        Check_out: currentTime,
-        Duration: Duration,
+        checkOut: currentTime,
+        duration: Duration,
       });
       res.send({ msg: `check-out successfully.` });
     } catch (err: any) {

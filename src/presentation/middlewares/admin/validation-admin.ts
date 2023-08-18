@@ -17,7 +17,7 @@ interface AdminInput {
   };
   role: string;
   active?: boolean;
-  profile_picture?: string;
+  profilePicture?: string;
 }
 
 const adminValidator= function (input: AdminInput): AdminInput {
@@ -34,7 +34,7 @@ const adminValidator= function (input: AdminInput): AdminInput {
       "string.email": "Invalid email format",
       "any.required": "Email is required",
     }),
-    password: Joi.string().required().min(6),
+    password: Joi.string().required().min(5),
     phoneNo: Joi.number().required().integer().max(9999999999999).messages({
       "number.base": "Phone number must be a number",
       "number.empty": "Phone number is required",
@@ -57,7 +57,7 @@ const adminValidator= function (input: AdminInput): AdminInput {
       "any.required": "Role is required",
     }),
     active: Joi.boolean().default(true),
-    profile_picture: Joi.string(),
+    profilePicture: Joi.string(),
   });
 
   const { error, value } = adminSchema.validate(input, { abortEarly: false });

@@ -70,7 +70,10 @@ export class AdminRepositoryImpl implements AdminRepository {
     }
   }
 
-  async login(email: string, password: string): Promise<Either<ErrorClass, AdminEntity>> {
+  async login(
+    email: string,
+    password: string
+  ): Promise<Either<ErrorClass, AdminEntity>> {
     try {
       const res = await this.dataSource.login(email, password);
 
@@ -82,6 +85,21 @@ export class AdminRepositoryImpl implements AdminRepository {
       return Left<ErrorClass, AdminEntity>(ApiError.badRequest());
     }
   }
+
+  async logout(): Promise<Either<ErrorClass, string>> {
+    try {
+      const res = await this.dataSource.logout();
+      return Right<ErrorClass, string>("Logged Out");
+    } catch (error) {
+      if (error instanceof ApiError) {
+        return Left<ErrorClass, string>(error); 
+      }
+      return Left<ErrorClass, string>(
+        ApiError.customError(500, "Logout Failed")
+      ); 
+    }
+  }
 }
+
   
    

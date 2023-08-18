@@ -13,10 +13,9 @@ export default (app: Express): void => {
   app.get("/health", (req, res) => {
     res.status(200).json({ message: "ok" });
   });
-
   app.use("/api/v1/admin", adminRouter);
 
-  app.use("/employee",employeeRouter);
+  app.use("/api/v1/employee",employeeRouter);
   app.use(router);
- app.use("/attendance", attendanceRouter)
+ app.use("/api/v1/attendance", attendanceRouter)
 };

@@ -8,14 +8,13 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
   
   export class EmployeeRepositoryImpl implements EmployeeRepository {
     private readonly dataSource: EmployeeDataSource;
-  
+
     constructor(dataSource: EmployeeDataSource) {
       this.dataSource = dataSource;
     }
-  
+
     async createEmployee(
       employee: EmployeeModel
-    
     ): Promise<Either<ErrorClass, EmployeeEntity>> {
       try {
         let i = await this.dataSource.create(employee);
@@ -27,7 +26,7 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
       }
     }
-  
+
     async deleteEmployee(employee: string): Promise<Either<ErrorClass, void>> {
       try {
         let i = await this.dataSource.delete(employee);
@@ -36,7 +35,7 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, void>(ApiError.badRequest());
       }
     }
-  
+
     async updateEmployee(
       id: string,
       data: EmployeeModel
@@ -51,7 +50,7 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
       }
     }
-  
+
     async getEmployees(): Promise<Either<ErrorClass, EmployeeEntity[]>> {
       try {
         let i = await this.dataSource.getAllemployees();
@@ -60,7 +59,7 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         return Left<ErrorClass, EmployeeEntity[]>(ApiError.badRequest());
       }
     }
-  
+
     async getEmployeeById(
       id: string
     ): Promise<Either<ErrorClass, EmployeeEntity | null>> {
@@ -72,11 +71,13 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
       }
     }
 
-    async login(email:string, password:string): Promise<Either<ErrorClass, EmployeeEntity>> {
+    async login(
+      email: string,
+      password: string
+    ): Promise<Either<ErrorClass, EmployeeEntity>> {
       try {
         const res = await this.dataSource.login(email, password);
-       
-        
+
         return Right<ErrorClass, EmployeeEntity>(res);
       } catch (error) {
         if (error instanceof ApiError && error.status === 404) {
@@ -84,17 +85,20 @@ import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel } from "@domain/e
         }
         return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
       }
-      }
+    }
 
-      async resetpassword(password:string): Promise<any> {
-        try{
-          const res = await this.dataSource.resetpassword(password);
-        }catch(error) {
-          if (error instanceof ApiError && error.status === 404) {
-            return Left<ErrorClass, EmployeeEntity>(ApiError.notFound());
-          }
-          return Left<ErrorClass, EmployeeEntity>(ApiError.badRequest());
+    async logout(): Promise<Either<ErrorClass, string>> {
+      try {
+        const res = await this.dataSource.logout();
+        return Right<ErrorClass, string>("Logged Out");
+      } catch (error) {
+        if (error instanceof ApiError) {
+          return Left<ErrorClass, string>(error);
         }
-        }
-        }
+        return Left<ErrorClass, string>(
+          ApiError.customError(500, "Logout Failed")
+        );
+      }
+    }
+  }
   

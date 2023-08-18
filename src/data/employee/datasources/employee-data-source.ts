@@ -24,7 +24,7 @@ export class InvitationApp {
     });
     // this.app.post('/send-invitation', this.sendInvitation.bind(this));
   }
-  public sendInvitation(email: string, companyName: string, full_name: string, password:string): Promise<void> {
+  public sendInvitation(email: string, companyName: string, fullName: string, password:string): Promise<void> {
     const mailOptions: nodemailer.SendMailOptions = {
       from: 'rutuja.dhekolkar@furation.tech',
       to: email,
@@ -34,7 +34,7 @@ export class InvitationApp {
       },
       // text: `You have been invited to join the group ${companyName}. Click the link to join: https://example.com/groups/${companyName}`
       html: `
-  <p>Dear ${full_name},</p>
+  <p>Dear ${fullName},</p>
   <p>We are thrilled to extend to you an invitation to join our esteemed community at Furation Tech Solutions. Your expertise and contributions are highly valued, and we believe your presence will further enrich our team.</p>
   <p><strong>Invitation Details:</strong></p>
   <p><strong>Company:</strong> Furation Tech Solutions<br>Invitation Link: <a href="https://time-tracker-frontend-eight.vercel.app/">Click Here</a></p>
@@ -65,24 +65,31 @@ export interface EmployeeDataSource {
   delete(id: string): Promise<void>;
   read(id: string): Promise<any | null>; // Return type should be Promise of EmployeeEntity or null
   getAllemployees(): Promise<any[]>; // Return type should be Promise of an array of EmployeeEntity
-  login(email:string, password:string): Promise<any>;
-  resetpassword(password:string): Promise<any>;
-
+  login(email: string, password: string): Promise<any>;
+  logout(): Promise<any>;
 }
 
 export class EmployeeDataSourceImpl implements EmployeeDataSource {
-  constructor(private db: mongoose.Connection, private invitationApp: InvitationApp) {}
+  constructor(
+    private db: mongoose.Connection,
+    private invitationApp: InvitationApp
+  ) {}
 
   async create(employee: EmployeeModel): Promise<any> {
-    const existingEmployee = await Employee.findOne({email: employee.email});
+    const existingEmployee = await Employee.findOne({ email: employee.email });
     if (existingEmployee) {
       throw ApiError.emailExist();
     }
 
-    const employeeData = new Employee(employee); 
+    const employeeData = new Employee(employee);
     const createEmployee = await employeeData.save();
-    await this.invitationApp.sendInvitation(employee.email, 'Furation Tech Solutions', employee.full_name,employee.password);
-    
+    await this.invitationApp.sendInvitation(
+      employee.email,
+      "Furation Tech Solutions",
+      employee.fullName,
+      employee.password
+    );
+
     return createEmployee.toObject();
   }
 
@@ -90,7 +97,7 @@ export class EmployeeDataSourceImpl implements EmployeeDataSource {
     const updatedEmployee = await Employee.findByIdAndUpdate(id, employee, {
       new: true,
     }); // No need for conversion here
-    return updatedEmployee ? updatedEmployee.toObject() :null; // Convert to plain JavaScript object before returning
+    return updatedEmployee ? updatedEmployee.toObject() : null; // Convert to plain JavaScript object before returning
   }
 
   async delete(id: string): Promise<void> {
@@ -108,26 +115,18 @@ export class EmployeeDataSourceImpl implements EmployeeDataSource {
   }
 
   async login(email: string, password: string): Promise<any> {
-    
     const employee = await Employee.findOne({ email }).select("+password");
-    
+
     if (!employee) {
-        throw ApiError.employeeNotFound();
+      throw ApiError.employeeNotFound();
     }
-     return employee;
-}
- 
+    return employee;
+  }
 
 
-async resetpassword(password: string): Promise<any> {
-  const employee = await Employee.findOne({ password });
-
-  if (!employee) {
-    throw ApiError.employeeNotFound();
-}
- return employee;
-}
-  
+  logout(): Promise<void> {
+    throw new Error("Logout Failed");
+  }
 }
 
 

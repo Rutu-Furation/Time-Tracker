@@ -1,5 +1,10 @@
 import { NextFunction, Request, Response } from "express";
-import {EmployeeModel,EmployeeEntity,EmployeeMapper,LoginModel} from "@domain/employee/entities/employee";
+import {
+  EmployeeModel,
+  EmployeeEntity,
+  EmployeeMapper,
+  LoginModel,
+} from "@domain/employee/entities/employee";
 import { CreateEmployeeUsecase } from "@domain/employee/usecases/create-employee";
 import { DeleteEmployeeUsecase } from "@domain/employee/usecases/delete-employee";
 import { GetEmployeeByIdUsecase } from "@domain/employee/usecases/get-employee-by-id";
@@ -9,6 +14,9 @@ import { LoginEmployeeUsecase } from "@domain/employee/usecases/login-employee";
 import ApiError from "@presentation/error-handling/api-error";
 import { Either } from "monet";
 import { ErrorClass } from "@presentation/error-handling/api-error";
+import { LogoutAdminUsecase } from "@domain/admin/usecases/logout-admin";
+import crypto from "crypto";
+import { generateRandomPassword } from "@presentation/middlewares/randomPassword";
 
 export class EmployeeService {
   private readonly CreateEmployeeUsecase: CreateEmployeeUsecase;
@@ -17,6 +25,7 @@ export class EmployeeService {
   private readonly UpdateEmployeeUsecase: UpdateEmployeeUsecase;
   private readonly GetAllEmployeesUsecase: GetAllEmployeesUsecase;
   private readonly LoginEmployeeUsecase: LoginEmployeeUsecase;
+  private readonly LogoutEmployeeUsecase: LogoutAdminUsecase;
 
   constructor(
     CreateEmployeeUsecase: CreateEmployeeUsecase,
@@ -24,19 +33,24 @@ export class EmployeeService {
     GetEmployeeByIdUsecase: GetEmployeeByIdUsecase,
     UpdateEmployeeUsecase: UpdateEmployeeUsecase,
     GetAllEmployeesUsecase: GetAllEmployeesUsecase,
-    LoginEmployeeUsecase: LoginEmployeeUsecase
-    
+    LoginEmployeeUsecase: LoginEmployeeUsecase,
+    LogoutEmployeeUsecase: LogoutAdminUsecase
   ) {
     this.CreateEmployeeUsecase = CreateEmployeeUsecase;
     this.DeleteEmployeeUsecase = DeleteEmployeeUsecase;
     this.GetEmployeeByIdUsecase = GetEmployeeByIdUsecase;
     this.UpdateEmployeeUsecase = UpdateEmployeeUsecase;
     this.GetAllEmployeesUsecase = GetAllEmployeesUsecase;
-
     this.LoginEmployeeUsecase = LoginEmployeeUsecase;
+    this.LogoutEmployeeUsecase = LogoutEmployeeUsecase;
   }
 
   async createEmployee(req: Request, res: Response): Promise<void> {
+    const randomPassword = generateRandomPassword(5);
+
+    req.body.password = randomPassword;
+
+    console.log(req.body, "Line 54");
     // Extract Employee data from the request body and convert it to EmployeeModel
     const employeeData: EmployeeModel = EmployeeMapper.toModel(req.body);
 
@@ -57,23 +71,42 @@ export class EmployeeService {
   async deleteEmployee(req: Request, res: Response): Promise<void> {
     const employeeId: string = req.params.employeeId;
 
-    const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
-      { del_status: "Deleted" },
-      true
-    );
-    // Call the UpdateEmployeeUsecase to delete the Employee
-    const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
-      await this.UpdateEmployeeUsecase.execute(employeeId,updatedEmployeeEntity);
+    // Call the DeleteEmployeeUsecase to delete the admin
+    const response: Either<ErrorClass, void> =
+      await this.DeleteEmployeeUsecase.execute(employeeId);
 
-      updatedEmployee.cata(
+    (await response).cata(
       (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
-      (result: EmployeeEntity) => {
-        const responseData = EmployeeMapper.toModel(result);
-        return res.json(responseData);
+      (result: void) => {
+        return res.json({ message: "Employee deleted successfully." });
       }
     );
   }
+
+  // async deleteEmployee(req: Request, res: Response): Promise<void> {
+  //   const employeeId: string = req.params.employeeId;
+
+  //   const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
+  //     { delStatus: "Deleted" },
+  //     true
+  //   );
+  //   // Call the UpdateEmployeeUsecase to delete the Employee
+  //   const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
+  //     await this.UpdateEmployeeUsecase.execute(
+  //       employeeId,
+  //       updatedEmployeeEntity
+  //     );
+
+  //   updatedEmployee.cata(
+  //     (error: ErrorClass) =>
+  //       res.status(error.status).json({ error: error.message }),
+  //     (result: EmployeeEntity) => {
+  //       const responseData = EmployeeMapper.toModel(result);
+  //       return res.json(responseData);
+  //     }
+  //   );
+  // }
 
   async getEmployeeById(req: Request, res: Response): Promise<void> {
     const employeeId: string = req.params.employeeId;
@@ -96,38 +129,38 @@ export class EmployeeService {
     const employeeData: EmployeeModel = req.body;
 
     // Get the existing Employee by ID
-    const existingEmployee: Either<ErrorClass, EmployeeEntity | null > =
+    const existingEmployee: Either<ErrorClass, EmployeeEntity | null> =
       await this.GetEmployeeByIdUsecase.execute(employeeId);
-     
-      if (!existingEmployee) {
-        // If Employee is not found, send a not found message as a JSON response
-        ApiError.notFound();
-        return;
-      }
 
-      // Convert employeeData from EmployeeModel to EmployeeEntity using EmployeeMapper
-      const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
-        employeeData,
-        true,
-        // existingEmployee
-      );
+    if (!existingEmployee) {
+      // If Employee is not found, send a not found message as a JSON response
+      ApiError.notFound();
+      return;
+    }
 
-      // Call the UpdateEmployeeUsecase to update the employee
-      const updatedEmployee: Either<ErrorClass, EmployeeEntity> = await this.UpdateEmployeeUsecase.execute(
+    // Convert employeeData from EmployeeModel to EmployeeEntity using EmployeeMapper
+    const updatedEmployeeEntity: EmployeeEntity = EmployeeMapper.toEntity(
+      employeeData,
+      true
+      // existingEmployee
+    );
+
+    // Call the UpdateEmployeeUsecase to update the employee
+    const updatedEmployee: Either<ErrorClass, EmployeeEntity> =
+      await this.UpdateEmployeeUsecase.execute(
         employeeId,
         updatedEmployeeEntity
       );
 
-      updatedEmployee.cata(
-        (error: ErrorClass) =>
+    updatedEmployee.cata(
+      (error: ErrorClass) =>
         res.status(error.status).json({ error: error.message }),
-        (result: EmployeeEntity) =>{
-          const responseData = EmployeeMapper.toModel(result);
-          return res.json(responseData)
-        }
-      )
+      (result: EmployeeEntity) => {
+        const responseData = EmployeeMapper.toModel(result);
+        return res.json(responseData);
+      }
+    );
   }
-   
 
   async getAllEmployees(req: Request, res: Response): Promise<void> {
     // Call the GetAllEmployeesUsecase to get all Employees
@@ -140,7 +173,7 @@ export class EmployeeService {
       (result: EmployeeEntity[]) => {
         // Convert Employees from an array of EmployeeEntity to an array of plain JSON objects using EmployeeMapper
         const responseData = result.map((employee) =>
-        EmployeeMapper.toModel(employee)
+          EmployeeMapper.toModel(employee)
         );
         return res.json(responseData);
       }
@@ -150,80 +183,53 @@ export class EmployeeService {
   async loginEmployee(req: Request, res: Response): Promise<void> {
     const { email, password } = req.body;
 
-    const employeeResult: Either<ErrorClass, any> = await this.LoginEmployeeUsecase.execute(email, password);
+    const employeeResult: Either<ErrorClass, any> =
+      await this.LoginEmployeeUsecase.execute(email, password);
 
     employeeResult.cata(
-        (error: ErrorClass) => {
-            res.status(error.status).json({ error: error.message });
-        },
-        async (employee: any) => {
-        
-            const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
-            if (!isMatch) {
-                const err =  ApiError.forbidden();
-                return res.status(err.status).json(err.message);
-            }
-
-            const token = await employee.generateToken();
-            console.log(token);
-
-            
-            const options = {
-                expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
-                httpOnly: true,
-            };
-
-            const resData = { employee: EmployeeMapper.toEntity(employee, true) };
-            res.cookie("token" , token, options).json(resData);
+      (error: ErrorClass) => {
+        res.status(error.status).json({ error: error.message });
+      },
+      async (employee: any) => {
+        const isMatch = await employee.matchPassword(password); // You should define the matchPassword method in AdminEntity
+        if (!isMatch) {
+          const err = ApiError.forbidden();
+          console.log(err);
+          return res.status(err.status).json(err.message);
         }
+
+        const token = await employee.generateToken();
+        console.log(token);
+
+        const options = {
+          expires: new Date(Date.now() + 90 * 24 * 60 * 60 * 1000),
+          httpOnly: true,
+        };
+
+        const resData = { employee: EmployeeMapper.toEntity(employee, true) };
+        res.cookie("token", token, options).json(resData);
+      }
     );
-}
+  }
 
-  // async loginEmployee(req: Request, res: Response): Promise<void> {
-
-  //   const {email, password} = req.body;
-    
-  //   const employee: Either<ErrorClass, any> =
-  //   await this.LoginEmployeeUsecase.execute(email, password);
-
-  //   employee.cata(
-  //     (error: ErrorClass) =>
-  //       res.status(error.status).json({ error: error.message }),
-  //     (result: EmployeeEntity) => {
-
-       
-  //       // Generate and send JWT token
-  //       // const token = this.generateJWTToken(result); // Implement this function
-  //       const resData = { employee: EmployeeMapper.toEntity(result, true)};
-  //       return res.json(resData);
-  //     }
-  //   );
-  // }
-
-  async resetPassword(req: Request, res: Response): Promise<void>{
-    const {email, password } = req.body;
-
-    console.log("password",email)
-    // =============================
-    // try {
-    //   const user = await userModel.findOne({ email });
-    //   if (user) {
-    //     bcrypt.compare(password, user.password, async (err, result) => {
-    //       if (result) {
-    //         let token = jwt.sign({ userID: user._id }, "sonu");
-    //         await userModel.findByIdAndUpdate({ _id: user._id });
-    //         res.send({ msg: "Login Successfull", token: token });
-    //       } else {
-    //         res.send({ msg: "Wrong Credentials" });
-    //       }
-    //     });
-    //   } else {
-    //     res.send({ msg: "User not found!" });
-    //   }
-    // } catch (err) {
-    //   res.send({ msg: "somthing went wrong! cannot login", error: err.message });
-    // }
-    // =============================
-
+  async logOutEmployee(req: Request, res: Response): Promise<void> {
+    try {
+      res
+        .status(200)
+        .cookie("token", null, {
+          expires: new Date(Date.now()),
+          httpOnly: true,
+        })
+        .json({
+          success: true,
+          message: "Logged Out",
+        });
+    } catch (error) {
+      const err = error as Error;
+      res.status(500).json({
+        success: false,
+        message: err.message,
+      });
+    }
   }
 }

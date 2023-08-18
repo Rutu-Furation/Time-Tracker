@@ -10,14 +10,20 @@ import { GetAdminById } from "@domain/admin/usecases/get-admin-by-id";
 import { GetAllAdmins } from "@domain/admin/usecases/get-all-admins";
 import { UpdateAdmin } from "@domain/admin/usecases/update-admin";
 import { LoginAdmin } from "@domain/admin/usecases/login-admin";
+import { LogoutAdmin } from "@domain/admin/usecases/logout-admin";
 import {validateAdminInputMiddleware } from "@presentation/middlewares/admin/validation-admin";
 import { isAuthenticated } from "@presentation/middlewares/auth";
+import { InvitationApp } from "@data/admin/datasources/admin-data-source";
+
 
 
 const mongooseConnection = mongoose.connection;
 
+const invitationApp = new InvitationApp();
+
+
 // Create an instance of the AdminDataSourceImpl and pass the mongoose connection
-const adminDataSource = new AdminDataSourceImpl(mongooseConnection);
+const adminDataSource = new AdminDataSourceImpl(mongooseConnection, invitationApp);
 // Create an instance of the AdminRepositoryImpl and pass the AdminDataSourceImpl
 const adminRepository = new AdminRepositoryImpl(adminDataSource);
 
@@ -28,6 +34,7 @@ const getAdminByIdUsecase = new GetAdminById(adminRepository);
 const updateAdminUsecase = new UpdateAdmin(adminRepository);
 const getAllAdminsUsecase = new GetAllAdmins(adminRepository);
 const loginAdminUsecase = new LoginAdmin(adminRepository);
+const logoutAdminUsecase = new LogoutAdmin(adminRepository);
 
 // Initialize AdminService and inject required dependencies
 const adminService = new AdminService(
@@ -36,7 +43,8 @@ const adminService = new AdminService(
   getAdminByIdUsecase,
   updateAdminUsecase,
   getAllAdminsUsecase,
-  loginAdminUsecase
+  loginAdminUsecase,
+  logoutAdminUsecase,
 );
 
 // Create an Express router
@@ -80,6 +88,12 @@ adminRouter.post(
   "/login",
   adminService.loginAdmin.bind(adminService)
 );
+
+adminRouter.get(
+  "/logout", 
+  adminService.logOut.bind(adminService)
+  );
+
 
 
 

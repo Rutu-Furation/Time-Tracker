@@ -10,8 +10,10 @@ import { GetEmployeeById } from "@domain/employee/usecases/get-employee-by-id";
 import { GetAllEmployees } from "@domain/employee/usecases/get-all-employee";
 import { UpdateEmployee } from "@domain/employee/usecases/update-Employee";
 import { LoginEmployee } from "@domain/employee/usecases/login-employee";
+import { LogoutEmployee } from "@domain/employee/usecases/logout-employee";
 import validateEmployeeMiddleware from "@presentation/middlewares/employee/validation-middleware";
 import { isAuthenticated } from "@presentation/middlewares/auth";
+// import { ForgotPassword } from "@domain/employee/usecases/forgot-Password";
 
 import { InvitationApp } from "@data/employee/datasources/employee-data-source";
 
@@ -35,9 +37,8 @@ const deleteEmployeeUsecase = new DeleteEmployee(employeeRepository);
 const getEmployeeByIdUsecase = new GetEmployeeById(employeeRepository);
 const updateEmployeeUsecase = new UpdateEmployee(employeeRepository);
 const getAllEmployeesUsecase = new GetAllEmployees(employeeRepository);
-
-const LoginEmployeeUsecase = new LoginEmployee(employeeRepository);
-
+const loginEmployeeUsecase = new LoginEmployee(employeeRepository);
+const logoutEmployeeUsecase = new LogoutEmployee(employeeRepository);
 // Initialize employeeService and inject required dependencies
 const employeeService = new EmployeeService(
   createEmployeeUsecase,
@@ -45,27 +46,28 @@ const employeeService = new EmployeeService(
   getEmployeeByIdUsecase,
   updateEmployeeUsecase,
   getAllEmployeesUsecase,
-  LoginEmployeeUsecase
+  loginEmployeeUsecase,
+  logoutEmployeeUsecase,
 );
 
 // Create an Express router
 export const employeeRouter = Router();
 
 // Route handling for creating a new Employee
-employeeRouter.post("/new", validateEmployeeMiddleware,employeeService.createEmployee.bind(employeeService));
+employeeRouter.post("/create", validateEmployeeMiddleware,isAuthenticated, employeeService.createEmployee.bind(employeeService));
 
 // Route handling for getting an Employee by ID
-employeeRouter.get("/:employeeId", employeeService.getEmployeeById.bind(employeeService));
+employeeRouter.get("/getByID/:employeeId", employeeService.getEmployeeById.bind(employeeService));
 
 // Route handling for updating an Employee by ID
-employeeRouter.put("/:employeeId", employeeService.updateEmployee.bind(employeeService));
+employeeRouter.put("/update/:employeeId", employeeService.updateEmployee.bind(employeeService));
 
 // Route handling for deleting an Employee by ID
-employeeRouter.delete("/:employeeId", employeeService.deleteEmployee.bind(employeeService));
+employeeRouter.delete("/delete/:employeeId", employeeService.deleteEmployee.bind(employeeService));
 
 // Route handling for getting all Employees
-employeeRouter.get("/", employeeService.getAllEmployees.bind(employeeService));
+employeeRouter.get("/getAll", employeeService.getAllEmployees.bind(employeeService));
 
 // Route handling for login Employees
 employeeRouter.post("/login", employeeService.loginEmployee.bind(employeeService));
-employeeRouter.post("/resetPass", employeeService.resetPassword.bind(employeeService));
+employeeRouter.get("/logout", employeeService.logOutEmployee.bind(employeeService));

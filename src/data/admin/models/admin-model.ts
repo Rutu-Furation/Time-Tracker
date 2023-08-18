@@ -27,7 +27,7 @@ const adminSchema = new mongoose.Schema({
   password: {
     type: String,
     required: [true, "Please enter a password"],
-    minlength: [6, "Password must be at least 6 characters"],
+    minlength: [5, "Password must be at least 5 characters"],
     select: false,
   },
 
@@ -71,7 +71,7 @@ const adminSchema = new mongoose.Schema({
     type: Boolean,
     default: true,
   },
-  profile_picture: {
+  profilePicture: {
     type: String,
     required: false,
   },

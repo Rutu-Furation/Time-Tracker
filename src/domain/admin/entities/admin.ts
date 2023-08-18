@@ -74,8 +74,8 @@ export class AdminMapper {
             ? adminData.active
             : existingAdmin.active,
         profilePicture:
-          adminData.profile_picture !== undefined
-            ? adminData.profile_picture
+          adminData.profilePicture !== undefined
+            ? adminData.profilePicture
             : existingAdmin.profilePicture,
       };
     } else {
@@ -88,7 +88,7 @@ export class AdminMapper {
         address: adminData.address,
         role: adminData.role,
         active: adminData.active,
-        profilePicture: adminData.profile_picture,
+        profilePicture: adminData.profilePicture,
       };
       return adminEntity;
     }

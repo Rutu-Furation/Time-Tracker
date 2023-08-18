@@ -25,6 +25,6 @@ const attendanceService = new AttendanceService(
 
 export const attendanceRouter = Router();
 
-attendanceRouter.post("/check-in",isAuthenticatedUser,  attendanceService.createAttendance.bind(attendanceService)),
-attendanceRouter.patch("/check-out",isAuthenticatedUser, attendanceService.updateAttendance.bind(attendanceService))
+attendanceRouter.post("/checkin",isAuthenticatedUser,  attendanceService.createAttendance.bind(attendanceService)),
+attendanceRouter.patch("/checkout",isAuthenticatedUser, attendanceService.updateAttendance.bind(attendanceService))
 // Create an Express router
